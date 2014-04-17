@@ -42,3 +42,7 @@ class CreateVolumeType(forms.SelfHandlingForm):
             exceptions.handle(request,
                               _('Unable to create volume type.'))
             return False
+
+
+class AdminEditCapabilitiesAndRequirementsForm(forms.SelfHandlingForm):
+    pass

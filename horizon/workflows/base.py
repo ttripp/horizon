@@ -191,6 +191,16 @@ class MembershipAction(Action):
         return self.slug + "_role_" + role_id
 
 
+class EditGraffitiCapabilitiesAction(Action):
+    def get_tag_field_name(self, tag_id):
+        return self.slug + "_tag_" + tag_id
+
+
+class EditGraffitiRequirementsAction(Action):
+    def get_tag_field_name(self, tag_id):
+        return self.slug + "_tag_" + tag_id
+
+
 class Step(object):
     """A step is a wrapper around an action which defines its context in a
     workflow. It knows about details such as:
@@ -484,6 +494,28 @@ class UpdateMembersStep(Step):
             return self.action.get_member_field_name(role_id)
         else:
             return self.slug + "_role_" + role_id
+
+
+class EditGraffitiCapabilitiesStep(Step):
+    template_name = \
+        "horizon/common/_workflow_step_edit_graffiti_capabilities.html"
+
+    def get_tag_field_name(self, tag_id):
+        if issubclass(self.action_class, EditGraffitiCapabilitiesAction):
+            return self.action.get_tag_field_name(tag_id)
+        else:
+            return self.slug + "_tag_" + tag_id
+
+
+class EditGraffitiRequirementsStep(Step):
+    template_name = \
+        "horizon/common/_workflow_step_edit_graffiti_requirements.html"
+
+    def get_tag_field_name(self, tag_id):
+        if issubclass(self.action_class, EditGraffitiRequirementsAction):
+            return self.action.get_tag_field_name(tag_id)
+        else:
+            return self.slug + "_tag_" + tag_id
 
 
 class Workflow(html.HTMLElement):

@@ -1,0 +1,40 @@
+<ul class="nav nav-list nav-pills nav-stacked abn-tree">
+    <input type="search" ng-model="abn_filter_value" placeholder="Filter" ng-change="filter_changed()"/><br />
+    <li ng-repeat="row in tree_rows | filter: abn_filter_value | filter:{visible:true} track by row.branch.uid"
+        ng-animate="'abn-tree-animate'"
+        ng-class="'level-' + {$ row.level $} + (row.branch.selected ? ' active':'')"
+        class="abn-tree-row">
+
+            <a ng-click="user_clicks_branch(row.branch)">
+                <table width="100%" border="0" style="margin-bottom:0px">
+                    <tr height="20px">
+                        <td width="85%">
+                            <i ng-class="row.tree_icon"
+                               ng-click="row.branch.expanded = !row.branch.expanded"
+                               class="indented tree-icon"></i>
+                            <span class="indented tree-label">{$ row.label $}</span>
+                        </td>
+                        <td width="15%">
+                            <span class="pull-right">
+                            <i ng-class="row.add_icon"
+                               class="add-icon"
+                               style="max-height:18px"
+                               ng-show="row.branch.selected && row.branch.onAdd != null"
+                               ng-click="user_clicks_add(row.branch)"></i>
+                            <i ng-class="row.edit_icon"
+                               class="edit-icon"
+                               style="max-height:18px"
+                               ng-show="row.branch.selected && row.branch.onEdit != null"
+                               ng-click="user_clicks_edit(row.branch)"></i>
+                            <i ng-class="row.remove_icon"
+                               class="remove-icon"
+                               style="max-height:18px"
+                               ng-show="row.branch.selected && row.branch.onRemove != null"
+                               ng-click="user_clicks_remove(row.branch)"></i>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </a>
+    </li>
+</ul>

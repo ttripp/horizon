@@ -13,6 +13,10 @@
 # Importing non-modules that are not used explicitly
 
 from horizon.workflows.base import Action  # noqa
+from horizon.workflows.base import EditGraffitiCapabilitiesAction  # noqa
+from horizon.workflows.base import EditGraffitiCapabilitiesStep  # noqa
+from horizon.workflows.base import EditGraffitiRequirementsAction  # noqa
+from horizon.workflows.base import EditGraffitiRequirementsStep  # noqa
 from horizon.workflows.base import MembershipAction  # noqa
 from horizon.workflows.base import Step  # noqa
 from horizon.workflows.base import UpdateMembersStep  # noqa

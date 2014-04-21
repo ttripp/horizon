@@ -10,7 +10,7 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="available_requirements" tree-control="my_tree2" on-select="available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="available_requirements" tree-control="requirements_tree" on-select="available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_requirements_namespaces && !namespaces_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
@@ -29,7 +29,7 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="selected_requirements" tree-control="my_tree2" on-select="selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="selected_requirements" tree-control="selected_requirements_tree" on-select="selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_existing_requirements && !existing_requirements_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
@@ -81,7 +81,7 @@
                                 ng-model="property.value"
                                 ng-required="{$ property.required $}"
                                 ng-pattern="/{$ property.pattern $}/"
-                                tooltip="[Select] {$ property.description $}"
+                                tooltip="[Choice] {$ property.description $}"
                                 ng-minlength="{$ property.minLength $}"
                                 ng-maxlength="{$ property.maxLength $}"
                                 ng-options="item for item in property.items">

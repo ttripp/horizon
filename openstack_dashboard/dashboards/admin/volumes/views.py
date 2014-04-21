@@ -97,6 +97,7 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
                               redirect=url)
 
         return {'volume_id': volume_id,
+                'volume_type': 'volume',
                 'token': token}
 
     def get_context_data(self, **kwargs):

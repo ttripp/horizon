@@ -1,6 +1,9 @@
-<div class="django_data_holder" data-token="{{ step.temp_token }}" data-obj-id="{{ step.obj_id }}" data-service-url="{{ step.temp_url }}">
+<div class="django_data_holder" data-token="{{ step.temp_token }}" data-obj-id="{{ step.obj_id }}" data-service-url="{{ step.temp_url }}" data-obj-type="{{ step.obj_type }}" data-namespace-type-mapping="{{ step.namespace_type_mapping }}">
   <div edit-graffiti-capabilities>
   </div>
+</div>
+<div class="hide">
+      {% include "horizon/common/_form_fields.html" %}
 </div>
 {% block modal-footer %}
 <button ng-disabled="edit_open" 

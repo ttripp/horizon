@@ -32,6 +32,10 @@ angular.module('hz').directive('saveCapabilitiesAndRequirements',
       $rootScope.$broadcast('graffiti:saved');
     };
 
-    $(".modal-footer>.btn-primary").replaceWith($("#btn-save"));
+    if ($(".modal-footer>.btn-primary").attr('id') == 'btn-save') {
+      $("fieldset>#btn-save").remove();
+    } else {
+      $(".modal-footer>.btn-primary").replaceWith($("#btn-save"));
+    };
   }
 ]);

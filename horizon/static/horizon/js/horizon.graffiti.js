@@ -94,6 +94,26 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
     };
 
     /*
+     * filter
+     */
+    self.filter_namespaces = function(filter_data, obj_type, widget_type) {
+      var namespace_list = [];
+      angular.forEach(filter_data, function(widget_list, namespace) {
+        angular.forEach(widget_list, function(obj_list, widget) {
+          if (widget == widget_type) {
+            for (var i = 0; i < obj_list.length; i++) {
+              if (obj_list[i] == obj_type) {
+                namespace_list.push(namespace);
+                break;
+              };
+            };
+          };
+        });
+      });
+      return namespace_list;
+    };
+
+    /*
      * data format conversion
      */
     self.transform_flare_to_abn_tree = function(namespace, node, add_function) {
@@ -111,6 +131,6 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
         self.transform_flare_to_abn_tree(namespace, node, add_function);
         children.push(node);
       });
-      output.push({label: namespace.namespace, children: children});
+      output.push({label: namespace.namespace, children: children, visible: namespace.visible});
     };
 }]);

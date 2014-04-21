@@ -10,7 +10,7 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="available_capabilities" tree-control="my_tree" on-select="available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="available_capabilities" tree-control="capabilities_tree" on-select="available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_capabilities_namespaces && !namespaces_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
@@ -29,7 +29,7 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="selected_capabilities" tree-control="my_tree2" on-select="selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="selected_capabilities" tree-control="selected_capabilities_tree" on-select="selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_existing_capabilities && !existing_capabilities_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">

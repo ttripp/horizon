@@ -81,8 +81,12 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
         token = self.request.user.token.id
 
         try:
-            # TODO(heather): needs to be a graffiti call
-            pass
+            image = api.glance.image_get(self.request, image_id)
+            image_type = 'image'
+            if image.properties and \
+               getattr(image.properties, 'image_type', '').lower() == \
+               'snapshot':
+                image_type = 'snapshot'
 
         except Exception:
             url = reverse('horizon:admin:images:index')
@@ -91,19 +95,8 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
                               redirect=url)
 
         return {'image_id': image_id,
+                'image_type': image_type,
                 'token': token}
-
-    def get_context_data(self, **kwargs):
-        context_data = super(EditCapabilitiesAndRequirementsView, self). \
-            get_context_data(**kwargs)
-
-        context_data['token'] = self.request.user.token.id
-        context_data['image_id'] = kwargs['image_id']
-
-        self.token = self.request.user.token.id
-        self.image_id = kwargs['image_id']
-
-        return context_data
 
 
 class DetailView(views.DetailView):

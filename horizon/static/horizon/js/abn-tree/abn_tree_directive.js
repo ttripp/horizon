@@ -245,7 +245,10 @@ module.directive('abnTree', function($timeout) {
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           root_branch = _ref[_i];
-          _results.push(add_branch_to_list(1, root_branch, true));
+          if (typeof _ref[_i].visible == 'undefined') {
+            _ref[_i].visible = true;
+          };
+          _results.push(add_branch_to_list(1, root_branch, _ref[_i].visible));
         }
         return _results;
       };

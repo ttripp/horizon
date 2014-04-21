@@ -28,11 +28,15 @@ angular.module('hz').directive('editGraffitiCapabilities',
   function ($scope, $http, $q, $timeout, graffitiService) {
     'use strict';
 
+    $scope.capabilities_tree = {}
+    $scope.selected_capabilities_tree = {}
+
     // instance-specific data from python
     var token = JSON.stringify($(".django_data_holder").data('token'));
     var obj_type = $(".django_data_holder").data('obj-type');
     var obj_id = $(".django_data_holder").data('obj-id');
     var service_url = $(".django_data_holder").data('service-url');
+    var namespace_type_mapping = $(".django_data_holder").data('namespace-type-mapping');
 
     // set on every load (when tab is opened or re-opened)
     $scope.is_loading_properties = false;
@@ -158,9 +162,24 @@ angular.module('hz').directive('editGraffitiCapabilities',
         $scope.is_loading_capabilities_namespaces = false;
         $scope.namespaces_load_error = status + " (" + data.message + ")";});
       namespace_promise.then(function(namespace_data) {
-        var n_data = angular.copy(namespace_data);
+        if (namespace_type_mapping) {
+          var filtered_namespaces = graffitiService.filter_namespaces(namespace_type_mapping, obj_type, "capabilities");
+          for (var i = 0; i < namespace_data.length; i++) {
+            namespace_data[i].visible = false;
+            for (var j = 0; j < filtered_namespaces.length; j++) {
+              if (namespace_data[i].namespace == filtered_namespaces[j]) {
+                namespace_data[i].visible = true;
+                break;
+              }; 
+            };
+          };
+        } else {
+          for (var i = 0; i < namespace_data.length; i++) {
+            namespace_data[i].visible = true;
+          };
+        };
         var output = []
-        angular.forEach(n_data, function(namespace) {
+        angular.forEach(namespace_data, function(namespace) {
           $scope.namespaces_load_error = "";
           var children_promise = graffitiService.get_capabilities_in_namespace(namespace.namespace, service_url, token, function(data, status, headers, config) {
             $scope.is_loading_capabilities_namespaces = false;
@@ -169,7 +188,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
           children_promise.then(function(capability_data) {
             var c_data = angular.copy(capability_data);
             graffitiService.transform_json_namespaces_to_abn_tree(namespace, c_data, user_clicks_add, output);
-            if (++namespaces_loaded_count == n_data.length) {
+            if (++namespaces_loaded_count == namespace_data.length) {
               $scope.is_loading_capabilities_namespaces = false;
               // TODO(heather): Take this line out!
               $scope.is_loading_existing_capabilities = false;

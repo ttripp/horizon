@@ -16,6 +16,7 @@ import re
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
+#from horizon import forms
 from horizon import workflows
 
 INDEX_URL = "horizon:admin:images:index"
@@ -30,6 +31,8 @@ class GraffitiCapabilitiesAction(workflows.EditGraffitiCapabilitiesAction):
 
 class GraffitiCapabilities(workflows.EditGraffitiCapabilitiesStep):
     action_class = GraffitiCapabilitiesAction
+    depends_on = ('image_id',
+                  'image_type')
 
     def __init__(self, workflow):
         super(GraffitiCapabilities, self).__init__(workflow)
@@ -38,10 +41,15 @@ class GraffitiCapabilities(workflows.EditGraffitiCapabilitiesStep):
         # TODO(heather): take this out!
         self.temp_token = getattr(settings, 'GRAFFITI_TOKEN', '')
         self.temp_url = getattr(settings, 'GRAFFITI_URL', '')
+        self.namespace_type_mapping = getattr(
+            settings, 'GRAFFITI_NAMESPACE_TYPE_MAPPING', '')
 
-        image_regex = r"[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}" \
-"-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}"
-        self.obj_id = re.findall(image_regex, workflow.request.path)[0]
+    def prepare_action_context(self, request, context):
+        context = super(GraffitiCapabilities,
+                        self).prepare_action_context(request, context)
+        self.obj_id = context.get('image_id')
+        self.obj_type = context.get('image_type')
+        return context
 
 
 class GraffitiRequirementsAction(workflows.EditGraffitiRequirementsAction):
@@ -53,6 +61,8 @@ class GraffitiRequirementsAction(workflows.EditGraffitiRequirementsAction):
 
 class GraffitiRequirements(workflows.EditGraffitiRequirementsStep):
     action_class = GraffitiRequirementsAction
+    depends_on = ('image_id',
+                  'image_type')
 
     def __init__(self, workflow):
         super(GraffitiRequirements, self).__init__(workflow)
@@ -61,10 +71,15 @@ class GraffitiRequirements(workflows.EditGraffitiRequirementsStep):
         # TODO(heather): take this out!
         self.temp_token = getattr(settings, 'GRAFFITI_TOKEN', '')
         self.temp_url = getattr(settings, 'GRAFFITI_URL', '')
+        self.namespace_type_mapping = getattr(
+            settings, 'GRAFFITI_NAMESPACE_TYPE_MAPPING', '')
 
-        image_regex = r"[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}" \
-"-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}"
-        self.obj_id = re.findall(image_regex, workflow.request.path)[0]
+    def prepare_action_context(self, request, context):
+        context = super(GraffitiRequirements,
+                        self).prepare_action_context(request, context)
+        self.obj_id = context.get('image_id')
+        self.obj_type = context.get('image_type')
+        return context
 
 
 class EditCapabilitiesAndRequirements(workflows.Workflow):

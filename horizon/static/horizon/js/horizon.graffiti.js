@@ -96,21 +96,35 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
     /*
      * filter
      */
-    self.filter_namespaces = function(filter_data, obj_type, widget_type) {
-      var namespace_list = [];
-      angular.forEach(filter_data, function(widget_list, namespace) {
-        angular.forEach(widget_list, function(obj_list, widget) {
-          if (widget == widget_type) {
-            for (var i = 0; i < obj_list.length; i++) {
-              if (obj_list[i] == obj_type) {
-                namespace_list.push(namespace);
-                break;
+    self.filter_namespaces = function(abn_tree_data, filter_data, obj_type, widget_type) {
+      if (filter_data) {
+        var namespace_list = [];
+        angular.forEach(filter_data, function(widget_list, namespace) {
+          angular.forEach(widget_list, function(obj_list, widget) {
+            if (widget == widget_type) {
+              for (var i = 0; i < obj_list.length; i++) {
+                if (obj_list[i] == obj_type) {
+                  namespace_list.push(namespace);
+                  break;
+                };
               };
             };
-          };
+          });
         });
-      });
-      return namespace_list;
+        for (var i = 0; i < abn_tree_data.length; i++) {
+          abn_tree_data[i].visible = false;
+          for (var j = 0; j < namespace_list.length; j++) {
+            if (abn_tree_data[i].label == namespace_list[j]) {
+              abn_tree_data[i].visible = true;
+              break;
+            };
+          };
+        };
+      } else {
+        for (var i = 0; i < abn_tree_data.length; i++) {
+          abn_tree_data[i].visible = true;
+        };
+      };
     };
 
     /*

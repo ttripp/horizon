@@ -39,10 +39,10 @@ angular.module('hz').directive('editGraffitiCapabilities',
     var namespace_type_mapping = $(".django_data_holder").data('namespace-type-mapping');
 
     // set on every load (when tab is opened or re-opened)
-    $scope.is_loading_properties = false;
-    $scope.edit_open = false;
-    $scope.chosen_available_description = "";
-    $scope.chosen_selected_description = "";
+    $scope.capabilities_is_loading_properties = false;
+    $scope.capabilities_edit_open = false;
+    $scope.capabilities_chosen_available_description = "";
+    $scope.capabilities_chosen_selected_description = "";
 
     if (!$scope.available_capabilities) {
       // set if this is the first load
@@ -56,12 +56,12 @@ angular.module('hz').directive('editGraffitiCapabilities',
       var first_load = false;
     };
 
-    $scope.available_handler = function(branch) {
-      $scope.chosen_available_description = branch.description;
+    $scope.capabilities_available_handler = function(branch) {
+      $scope.capabilities_chosen_available_description = branch.description;
     };
 
-    $scope.selected_handler = function(branch) {
-      $scope.chosen_selected_description = branch.description;
+    $scope.capabilities_selected_handler = function(branch) {
+      $scope.capabilities_chosen_selected_description = branch.description;
     };
 
     var user_clicks_add = function(branch) {
@@ -72,14 +72,14 @@ angular.module('hz').directive('editGraffitiCapabilities',
       capability.onRemove = user_clicks_remove;
       capability.onEdit = user_clicks_edit;
       $scope.selected_capabilities.push(capability);
-      $scope.edit_open = false;
+      $scope.capabilities_edit_open = false;
     };
 
     var user_clicks_remove = function(branch) {
       for (var i = 0; i < $scope.selected_capabilities.length; i++) {
         if ($scope.selected_capabilities[i].label == branch.label) {
           $scope.selected_capabilities.splice(i,1);
-          $scope.chosen_selected_description = "";
+          $scope.capabilities_chosen_selected_description = "";
           break;
         };
       };
@@ -87,11 +87,11 @@ angular.module('hz').directive('editGraffitiCapabilities',
 
     var user_clicks_edit = function(branch) {
       if (!branch.data.properties) {
-        $scope.is_loading_properties = true;
-        $scope.properties_load_error = "";
+        $scope.capabilities_is_loading_properties = true;
+        $scope.capabilities_properties_load_error = "";
         var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, service_url, token, function(data, status, headers, config) {
-          $scope.is_loading_properties = false;
-          $scope.properties_load_error = status + " (" + data.message + ")";
+          $scope.capabilities_is_loading_properties = false;
+          $scope.capabilities_properties_load_error = status + " (" + data.message + ")";
         });
         properties_promise.then(function(properties_data) {
           if (properties_data) {
@@ -125,21 +125,21 @@ angular.module('hz').directive('editGraffitiCapabilities',
             // save a copy of the original values in case of cancel
             $scope.selected_capability_properties_orig = angular.copy($scope.selected_capability.data.properties);
           };
-          $scope.is_loading_properties = false;
+          $scope.capabilities_is_loading_properties = false;
         }, function(reason) {
-          $scope.is_loading_properties = false;
-          $scope.load_properties_failed = reason;
+          $scope.capabilities_is_loading_properties = false;
+          $scope.capabilities_load_properties_failed = reason;
         });
       } else {
         $scope.selected_capability = branch;
         // save a copy of the original values in case of cancel
         $scope.selected_capability_properties_orig = angular.copy($scope.selected_capability.data.properties);
       };
-      $scope.edit_open = true;
+      $scope.capabilities_edit_open = true;
     };
 
     $scope.save_capability_property_data = function() {
-      $scope.edit_open = false;
+      $scope.capabilities_edit_open = false;
       var data = $scope.selected_capability.data.properties;
       for (var i=0; i<data.length; i++) {
           console.log("PROPERTY: " + data[i].name + "=" + data[i].value);
@@ -152,43 +152,29 @@ angular.module('hz').directive('editGraffitiCapabilities',
         $scope.selected_capability.data.properties = angular.copy($scope.selected_capability_properties_orig);
       }
 
-      $scope.edit_open = false;
+      $scope.capabilities_edit_open = false;
     };
 
     if (first_load) {
       var namespaces_loaded_count = 0;
-      $scope.namespaces_load_error = "";
+      $scope.capabilities_namespaces_load_error = "";
       var namespace_promise = graffitiService.get_namespaces(service_url, token, function(data, status, headers, config) {
         $scope.is_loading_capabilities_namespaces = false;
-        $scope.namespaces_load_error = status + " (" + data.message + ")";});
+        $scope.capabilities_namespaces_load_error = status + " (" + data.message + ")";});
       namespace_promise.then(function(namespace_data) {
-        if (namespace_type_mapping) {
-          var filtered_namespaces = graffitiService.filter_namespaces(namespace_type_mapping, obj_type, "capabilities");
-          for (var i = 0; i < namespace_data.length; i++) {
-            namespace_data[i].visible = false;
-            for (var j = 0; j < filtered_namespaces.length; j++) {
-              if (namespace_data[i].namespace == filtered_namespaces[j]) {
-                namespace_data[i].visible = true;
-                break;
-              }; 
-            };
-          };
-        } else {
-          for (var i = 0; i < namespace_data.length; i++) {
-            namespace_data[i].visible = true;
-          };
-        };
         var output = []
         angular.forEach(namespace_data, function(namespace) {
-          $scope.namespaces_load_error = "";
+          $scope.capabilities_namespaces_load_error = "";
           var children_promise = graffitiService.get_capabilities_in_namespace(namespace.namespace, service_url, token, function(data, status, headers, config) {
             $scope.is_loading_capabilities_namespaces = false;
-            $scope.namespaces_load_error = status + " (" + data.message + ")";
+            $scope.capabilities_namespaces_load_error = status + " (" + data.message + ")";
           });
           children_promise.then(function(capability_data) {
             var c_data = angular.copy(capability_data);
             graffitiService.transform_json_namespaces_to_abn_tree(namespace, c_data, user_clicks_add, output);
             if (++namespaces_loaded_count == namespace_data.length) {
+              graffitiService.filter_namespaces(output, namespace_type_mapping, obj_type, "capabilities");
+              $scope.available_capabilities = output;
               $scope.is_loading_capabilities_namespaces = false;
               // TODO(heather): Take this line out!
               $scope.is_loading_existing_capabilities = false;
@@ -196,9 +182,10 @@ angular.module('hz').directive('editGraffitiCapabilities',
           }, function(reason) {
           });
         });
-        $scope.available_capabilities = output;
       }, function(reason) {
       });
+    } else {
+      graffitiService.filter_namespaces($scope.available_capabilities, namespace_type_mapping, obj_type, "capabilities");
     };
 
     $scope.$on('graffiti:saved', function() {

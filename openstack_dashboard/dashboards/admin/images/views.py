@@ -84,7 +84,7 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
             image = api.glance.image_get(self.request, image_id)
             image_type = 'image'
             if image.properties and \
-               getattr(image.properties, 'image_type', '').lower() == \
+               image.properties.get('image_type', '').lower() == \
                'snapshot':
                 image_type = 'snapshot'
 

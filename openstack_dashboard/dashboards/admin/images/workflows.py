@@ -16,7 +16,6 @@ import re
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-#from horizon import forms
 from horizon import workflows
 
 INDEX_URL = "horizon:admin:images:index"

@@ -239,6 +239,8 @@ angular.module('hz').directive('editGraffitiRequirements',
     };
 
     $scope.$on('graffiti:saved', function() {
+      $scope.selected_requirements = [];
+      $scope.requirements_chosen_selected_description = "";
       console.log('edit controller save');
     });
 

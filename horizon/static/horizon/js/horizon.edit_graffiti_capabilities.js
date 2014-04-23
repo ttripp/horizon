@@ -189,6 +189,8 @@ angular.module('hz').directive('editGraffitiCapabilities',
     };
 
     $scope.$on('graffiti:saved', function() {
+      $scope.selected_capabilities = [];
+      $scope.capabilities_chosen_selected_description = "";
       console.log('edit controller save');
     });
   }

@@ -134,17 +134,22 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       node.label = node.name;
       node.data = {namespace: namespace.namespace};
       node.onAdd = add_function;
-      for (var i = 0; i < node.children.length; i++) {
-        self.transform_flare_to_abn_tree(namespace, node.children[i], add_function);
+      if (node.children) {
+        node.children.sort(function(a,b) {return a.name.localeCompare(b.name)});
+        for (var i = 0; i < node.children.length; i++) {
+          self.transform_flare_to_abn_tree(namespace, node.children[i], add_function);
+        };
       };
     };
 
     self.transform_json_namespaces_to_abn_tree = function(namespace, nodes, add_function, output) {
       var children = [];
+      nodes.children.sort(function(a,b) {return a.name.localeCompare(b.name)});
       angular.forEach(nodes.children, function(node) {
         self.transform_flare_to_abn_tree(namespace, node, add_function);
         children.push(node);
       });
       output.push({label: namespace.namespace, children: children, visible: namespace.visible});
+      output.sort(function(a,b) {return a.label.localeCompare(b.label)});
     };
 }]);

@@ -126,13 +126,6 @@
                                 ng-model="property.value"
                                 ng-required="{$ property.required $}"/>
                         </td>
-
-                        <td>
-                            <span ng-show="property_form.property_value.$invalid && property_form.property_value.$dirty">
-                                <font color="red"><b>Fail!</b></font>
-                            </span>
-                        </td>
-
                         <td>
                             <span ng-show="property_form.property_value.$valid && property_form.operator_value.$valid && !property.is_duplicate">
                                 <span ng-click="add_duplicate_row_clicked(property)"><span class="icon-plus  glyphicon glyphicon-plus  fa fa-plus" /></span>
@@ -140,6 +133,14 @@
 
                             <span ng-show="property.is_duplicate">
                                 <span ng-click="remove_duplicate_row_clicked(property)"><span class="icon-minus  glyphicon glyphicon-minus  fa fa-minus" /></span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td />
+                        <td>
+                            <span ng-show="property_form.property_value.$invalid && property_form.property_value.$dirty">
+                                <font color="red"><b>{$ detect_validity_errors(property_form.property_value) $}</b></font>
                             </span>
                         </td>
                     </tr>

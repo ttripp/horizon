@@ -155,6 +155,10 @@ angular.module('hz').directive('editGraffitiCapabilities',
       $scope.capabilities_edit_open = false;
     };
 
+    $scope.detect_validity_errors = function(property_value) {
+      return graffitiService.detect_validity_errors(property_value);
+    };
+
     if (first_load) {
       var namespaces_loaded_count = 0;
       $scope.capabilities_namespaces_load_error = "";

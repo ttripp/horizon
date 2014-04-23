@@ -152,4 +152,25 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       output.push({label: namespace.namespace, children: children, visible: namespace.visible});
       output.sort(function(a,b) {return a.label.localeCompare(b.label)});
     };
+
+    self.detect_validity_errors = function(property_value) {
+      if (property_value) {
+        if (property_value.$error.required) {
+          return "This property is required.";
+        } else if (property_value.$error.minlength) {
+          return "The entered value is too short.";
+        } else if (property_value.$error.maxlength) {
+          return "The entered value is too long.";
+        } else if (property_value.$error.pattern) {
+          return "The entered value does not match the pattern.";
+        } else if (property_value.$error.number) {
+          return "The value must be a number.";
+        } else {
+          return "Invalid value.";
+        };
+      } else {
+        return "No property value.";
+      };
+    };
+
 }]);

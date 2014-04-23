@@ -115,8 +115,9 @@
                         tooltip="{$ property.description $}"
                         ng-model="property.value"
                         ng-required="{$ property.required $}"/>
+                    <br/>
                     <span ng-show="property_form.property_value.$invalid && property_form.property_value.$dirty">
-                        <font color="red"><b>Fail!</b></font>
+                        <font color="red"><b>{$ detect_validity_errors(property_form.property_value) $}</b></font>
                     </span>
                 </ng-form>
             </span>

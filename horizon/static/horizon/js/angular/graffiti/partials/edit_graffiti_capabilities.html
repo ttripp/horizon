@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="right" ng-show="capabilities_edit_open == true">
+    <div class="right" ng-show="capabilities_edit_open == true" style="overflow:auto;max-height:480px;height:480px">
         <progressbar class="progress-striped active" max="100" value="100" ng-show="capabilities_is_loading_properties">Loading...</progressbar>
         <div ng-show="capabilities_properties_load_error">
             <p>

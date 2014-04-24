@@ -37,9 +37,15 @@ class GraffitiCapabilities(workflows.EditGraffitiCapabilitiesStep):
         super(GraffitiCapabilities, self).__init__(workflow)
 
         self.token = workflow.request.user.token.id
+        self.endpoint_id = None
+        for entry in workflow.request.user.service_catalog:
+            if entry['type'] == 'image':
+                self.endpoint_id = entry['endpoints'][0]['id']
+                break
+        self.service_url = getattr(settings, 'GRAFFITI_URL', '')
         # TODO(heather): take this out!
         self.temp_token = getattr(settings, 'GRAFFITI_TOKEN', '')
-        self.temp_url = getattr(settings, 'GRAFFITI_URL', '')
+        self.temp_url = getattr(settings, 'GRAFFITI_TEMP_URL', '')
         self.namespace_type_mapping = getattr(
             settings, 'GRAFFITI_NAMESPACE_TYPE_MAPPING', '')
 
@@ -67,9 +73,15 @@ class GraffitiRequirements(workflows.EditGraffitiRequirementsStep):
         super(GraffitiRequirements, self).__init__(workflow)
 
         self.token = workflow.request.user.token.id
+        self.endpoint_id = None
+        for entry in workflow.request.user.service_catalog:
+            if entry['type'] == 'image':
+                self.endpoint_id = entry['endpoints'][0]['id']
+                break
+        self.service_url = getattr(settings, 'GRAFFITI_URL', '')
         # TODO(heather): take this out!
         self.temp_token = getattr(settings, 'GRAFFITI_TOKEN', '')
-        self.temp_url = getattr(settings, 'GRAFFITI_URL', '')
+        self.temp_url = getattr(settings, 'GRAFFITI_TEMP_URL', '')
         self.namespace_type_mapping = getattr(
             settings, 'GRAFFITI_NAMESPACE_TYPE_MAPPING', '')
 

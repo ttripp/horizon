@@ -53,12 +53,20 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       return deferred.promise;
     };
 
-    self.get_existing_capabilities = function(object_id, endpoint_id, base_uri, token, error_function) {
+    self.get_existing_capabilities = function(object_type, object_id, endpoint_id, base_uri, token, error_function) {
       var deferred = $q.defer();
       $http.defaults.headers.common['Accept'] = 'application/json';
       $http.defaults.headers.common['X-Auth-Token'] = token;
 
-      // TODO(heather): load initial data from graffiti
+      $http.get(base_uri + 'resource/' + object_type + '/' + object_id + '/' + endpoint_id + '/')
+        .success(function(data) {
+          if (data) {
+            deferred.resolve(data);
+          } else {
+            deferred.resolve(null);
+          }
+        }).error(error_function);
+      return deferred.promise;
     };
 
     self.get_capability_properties = function(namespace, capability, base_uri, token, error_function) {

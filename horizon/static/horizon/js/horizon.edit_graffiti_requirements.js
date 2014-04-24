@@ -32,10 +32,16 @@ angular.module('hz').directive('editGraffitiRequirements',
     $scope.selected_requirements_tree = {}
 
     // instance-specific data from python
-    var token = JSON.stringify($(".django_data_holder").data('token'));
-    var obj_type = $(".django_data_holder").data('obj-type');
-    var obj_id = $(".django_data_holder").data('obj-id');
+    var token = $(".django_data_holder").data('token');
     var service_url = $(".django_data_holder").data('service-url');
+    var temp_token = JSON.stringify($(".django_data_holder").data('temp-token'));
+    var temp_url = $(".django_data_holder").data('temp-url');
+    var obj_type = $(".django_data_holder").data('obj-type');
+    if ($scope.requirements_obj_id) {
+      $scope.requirements_old_obj_id = angular.copy($scope.requirements_obj_id);
+    };
+    $scope.requirements_obj_id = $(".django_data_holder").data('obj-id');
+    var endpoint_id = $(".django_data_holder").data('endpoint-id');
     var namespace_type_mapping = $(".django_data_holder").data('namespace-type-mapping');
 
 
@@ -44,6 +50,23 @@ angular.module('hz').directive('editGraffitiRequirements',
     $scope.requirements_edit_open = false;
     $scope.requirements_chosen_available_description = "";
     $scope.requirements_chosen_selected_description = "";
+
+    if (($scope.requirements_old_obj_id && $scope.requirements_old_obj_id != $scope.requirements_obj_id) || !$scope.requirements_old_obj_id) {
+      $scope.existing_requirements_load_error = "";
+      var existing_requirements_promise = graffitiService.get_existing_capabilities(obj_type, $scope.requirements_obj_id, endpoint_id, service_url, token, function(data, status, headers, config) {
+        $scope.is_loading_existing_requirements = false;
+        $scope.existing_requirements_load_error = status + " (" + data.message + ")";});
+      existing_requirements_promise.then(function(existing_requirements_data) {
+        if (existing_requirements_data) {
+          console.log("got existing requirements:");
+          console.log(existing_requirements_data);
+          // TODO: put existing into selected
+        } else {
+          console.log("no existing capabilities");
+        };
+        $scope.is_loading_existing_requirements = false;
+      });
+    };
 
     if (!$scope.available_requirements) {
       // set if this is the first load
@@ -92,7 +115,7 @@ angular.module('hz').directive('editGraffitiRequirements',
         $scope.requirements_is_loading_properties = true;
         $scope.requirements_properties_load_error = "";
 
-        var operators_promise = graffitiService.get_property_operators(service_url, token, function(data, status, headers, config) {
+        var operators_promise = graffitiService.get_property_operators(temp_url, temp_token, function(data, status, headers, config) {
           $scope.requirements_is_loading_properties = false;
           $scope.requirements_properties_load_error = status + " (" + data.message + ")";
         });
@@ -123,7 +146,7 @@ angular.module('hz').directive('editGraffitiRequirements',
             return null;
         };
 
-        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, service_url, token, function(data, status, headers, config) {
+        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
           $scope.requirements_is_loading_properties = false;
           $scope.requirements_properties_load_error = status + " (" + data.message + ")";
         });
@@ -212,14 +235,14 @@ angular.module('hz').directive('editGraffitiRequirements',
     if (first_load) {
       var namespaces_loaded_count = 0;
       $scope.requirements_namespaces_load_error = "";
-      var namespace_promise = graffitiService.get_namespaces(service_url, token, function(data, status, headers, config) {
+      var namespace_promise = graffitiService.get_namespaces(temp_url, temp_token, function(data, status, headers, config) {
         $scope.is_loading_requirements_namespaces = false;
         $scope.requirements_namespaces_load_error = status + " (" + data.message + ")";});
       namespace_promise.then(function(namespace_data) {
         var output = []
         angular.forEach(namespace_data, function(namespace) {
           $scope.requirements_namespaces_load_error = "";
-          var children_promise = graffitiService.get_capabilities_in_namespace(namespace.namespace, service_url, token, function(data, status, headers, config) {
+          var children_promise = graffitiService.get_capabilities_in_namespace(namespace.namespace, temp_url, temp_token, function(data, status, headers, config) {
             $scope.is_loading_requirements_namespaces = false;
             $scope.requirements_namespaces_load_error = status + " (" + data.message + ")";
           });

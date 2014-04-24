@@ -82,11 +82,11 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
 
         try:
             image = api.glance.image_get(self.request, image_id)
-            image_type = 'image'
+            image_type = 'OS::Glance::Image'
             if image.properties and \
                image.properties.get('image_type', '').lower() == \
                'snapshot':
-                image_type = 'snapshot'
+                image_type = 'OS::Glance::Snapshot'
 
         except Exception:
             url = reverse('horizon:admin:images:index')

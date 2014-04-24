@@ -32,10 +32,16 @@ angular.module('hz').directive('editGraffitiCapabilities',
     $scope.selected_capabilities_tree = {}
 
     // instance-specific data from python
-    var token = JSON.stringify($(".django_data_holder").data('token'));
-    var obj_type = $(".django_data_holder").data('obj-type');
-    var obj_id = $(".django_data_holder").data('obj-id');
+    var token = $(".django_data_holder").data('token');
     var service_url = $(".django_data_holder").data('service-url');
+    var temp_url = $(".django_data_holder").data('temp-url');
+    var temp_token = JSON.stringify($(".django_data_holder").data('temp-token'));
+    var obj_type = $(".django_data_holder").data('obj-type');
+    if ($scope.capabilities_obj_id) {
+      $scope.capabilities_old_obj_id = angular.copy($scope.capabilities_obj_id);
+    };
+    $scope.capabilities_obj_id = $(".django_data_holder").data('obj-id');
+    var endpoint_id = $(".django_data_holder").data('endpoint-id');
     var namespace_type_mapping = $(".django_data_holder").data('namespace-type-mapping');
 
     // set on every load (when tab is opened or re-opened)
@@ -43,6 +49,23 @@ angular.module('hz').directive('editGraffitiCapabilities',
     $scope.capabilities_edit_open = false;
     $scope.capabilities_chosen_available_description = "";
     $scope.capabilities_chosen_selected_description = "";
+
+    if (($scope.capabilities_old_obj_id && $scope.capabilities_old_obj_id != $scope.capabilities_obj_id) || !$scope.capabilities_old_obj_id) {
+      $scope.existing_capabilities_load_error = "";
+      var existing_capabilities_promise = graffitiService.get_existing_capabilities(obj_type, $scope.capabilities_obj_id, endpoint_id, service_url, token, function(data, status, headers, config) {
+        $scope.is_loading_existing_capabilities = false;
+        $scope.existing_capabilities_load_error = status + " (" + data.message + ")";});
+      existing_capabilities_promise.then(function(existing_capabilities_data) {
+        if (existing_capabilities_data) {
+          console.log("got existing capabilities:");
+          console.log(existing_capabilities_data);
+          // TODO: put existing into selected
+        } else {
+          console.log("no existing capabilities");
+        };
+        $scope.is_loading_existing_capabilities = false;
+      });
+    };
 
     if (!$scope.available_capabilities) {
       // set if this is the first load
@@ -89,7 +112,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
       if (!branch.data.properties) {
         $scope.capabilities_is_loading_properties = true;
         $scope.capabilities_properties_load_error = "";
-        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, service_url, token, function(data, status, headers, config) {
+        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
           $scope.capabilities_is_loading_properties = false;
           $scope.capabilities_properties_load_error = status + " (" + data.message + ")";
         });
@@ -162,14 +185,14 @@ angular.module('hz').directive('editGraffitiCapabilities',
     if (first_load) {
       var namespaces_loaded_count = 0;
       $scope.capabilities_namespaces_load_error = "";
-      var namespace_promise = graffitiService.get_namespaces(service_url, token, function(data, status, headers, config) {
+      var namespace_promise = graffitiService.get_namespaces(temp_url, temp_token, function(data, status, headers, config) {
         $scope.is_loading_capabilities_namespaces = false;
         $scope.capabilities_namespaces_load_error = status + " (" + data.message + ")";});
       namespace_promise.then(function(namespace_data) {
         var output = []
         angular.forEach(namespace_data, function(namespace) {
           $scope.capabilities_namespaces_load_error = "";
-          var children_promise = graffitiService.get_capabilities_in_namespace(namespace.namespace, service_url, token, function(data, status, headers, config) {
+          var children_promise = graffitiService.get_capabilities_in_namespace(namespace.namespace, temp_url, temp_token, function(data, status, headers, config) {
             $scope.is_loading_capabilities_namespaces = false;
             $scope.capabilities_namespaces_load_error = status + " (" + data.message + ")";
           });

@@ -53,12 +53,20 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       return deferred.promise;
     };
 
-    self.get_existing_capabilities = function(object_id, endpoint_id, base_uri, token, error_function) {
+    self.get_existing_capabilities = function(object_type, object_id, endpoint_id, base_uri, token, error_function) {
       var deferred = $q.defer();
       $http.defaults.headers.common['Accept'] = 'application/json';
       $http.defaults.headers.common['X-Auth-Token'] = token;
 
-      // TODO(heather): load initial data from graffiti
+      $http.get(base_uri + 'resource/' + object_type + '/' + object_id + '/' + endpoint_id + '/')
+        .success(function(data) {
+          if (data) {
+            deferred.resolve(data);
+          } else {
+            deferred.resolve(null);
+          }
+        }).error(error_function);
+      return deferred.promise;
     };
 
     self.get_capability_properties = function(namespace, capability, base_uri, token, error_function) {
@@ -96,21 +104,35 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
     /*
      * filter
      */
-    self.filter_namespaces = function(filter_data, obj_type, widget_type) {
-      var namespace_list = [];
-      angular.forEach(filter_data, function(widget_list, namespace) {
-        angular.forEach(widget_list, function(obj_list, widget) {
-          if (widget == widget_type) {
-            for (var i = 0; i < obj_list.length; i++) {
-              if (obj_list[i] == obj_type) {
-                namespace_list.push(namespace);
-                break;
+    self.filter_namespaces = function(abn_tree_data, filter_data, obj_type, widget_type) {
+      if (filter_data) {
+        var namespace_list = [];
+        angular.forEach(filter_data, function(widget_list, namespace) {
+          angular.forEach(widget_list, function(obj_list, widget) {
+            if (widget == widget_type) {
+              for (var i = 0; i < obj_list.length; i++) {
+                if (obj_list[i] == obj_type) {
+                  namespace_list.push(namespace);
+                  break;
+                };
               };
             };
-          };
+          });
         });
-      });
-      return namespace_list;
+        for (var i = 0; i < abn_tree_data.length; i++) {
+          abn_tree_data[i].visible = false;
+          for (var j = 0; j < namespace_list.length; j++) {
+            if (abn_tree_data[i].label == namespace_list[j]) {
+              abn_tree_data[i].visible = true;
+              break;
+            };
+          };
+        };
+      } else {
+        for (var i = 0; i < abn_tree_data.length; i++) {
+          abn_tree_data[i].visible = true;
+        };
+      };
     };
 
     /*
@@ -120,17 +142,43 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       node.label = node.name;
       node.data = {namespace: namespace.namespace};
       node.onAdd = add_function;
-      for (var i = 0; i < node.children.length; i++) {
-        self.transform_flare_to_abn_tree(namespace, node.children[i], add_function);
+      if (node.children) {
+        node.children.sort(function(a,b) {return a.name.localeCompare(b.name)});
+        for (var i = 0; i < node.children.length; i++) {
+          self.transform_flare_to_abn_tree(namespace, node.children[i], add_function);
+        };
       };
     };
 
     self.transform_json_namespaces_to_abn_tree = function(namespace, nodes, add_function, output) {
       var children = [];
+      nodes.children.sort(function(a,b) {return a.name.localeCompare(b.name)});
       angular.forEach(nodes.children, function(node) {
         self.transform_flare_to_abn_tree(namespace, node, add_function);
         children.push(node);
       });
       output.push({label: namespace.namespace, children: children, visible: namespace.visible});
+      output.sort(function(a,b) {return a.label.localeCompare(b.label)});
     };
+
+    self.detect_validity_errors = function(property_value) {
+      if (property_value) {
+        if (property_value.$error.required) {
+          return "This property is required.";
+        } else if (property_value.$error.minlength) {
+          return "The entered value is too short.";
+        } else if (property_value.$error.maxlength) {
+          return "The entered value is too long.";
+        } else if (property_value.$error.pattern) {
+          return "The entered value does not match the pattern.";
+        } else if (property_value.$error.number) {
+          return "The value must be a number.";
+        } else {
+          return "Invalid value.";
+        };
+      } else {
+        return "No property value.";
+      };
+    };
+
 }]);

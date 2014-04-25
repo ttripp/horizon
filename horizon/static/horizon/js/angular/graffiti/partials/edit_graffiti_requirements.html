@@ -1,24 +1,24 @@
 <div>
     <div class="left" style="margin-left:0px;margin-right:5px">
         <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_requirements_namespaces">Loading...</progressbar>
-        <div ng-show="namespaces_load_error">
+        <div ng-show="requirements_namespaces_load_error">
             <p>
                 <font color="red">
-                    Loading namespaces failed: {{namespaces_load_error}}
+                    Loading namespaces failed: {{requirements_namespaces_load_error}}
                 </font>
             </p>
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="available_requirements" tree-control="requirements_tree" on-select="available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="available_requirements" tree-control="requirements_tree" on-select="requirements_available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
         </div>
         <br/>
-        <div ng-show="!is_loading_requirements_namespaces && !namespaces_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
-            <p style="width:90%;padding:5px">{$ chosen_available_description $}</p>
+        <div ng-show="!is_loading_requirements_namespaces && !requirements_namespaces_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
+            <p style="width:90%;padding:5px">{$ requirements_chosen_available_description $}</p>
         </div>
     </div>
 
-    <div class="right" style="margin-left:5px;margin-right:0px" ng-show="edit_open == false && !is_loading_requirements_namespaces">
+    <div class="right" style="margin-left:5px;margin-right:0px" ng-show="requirements_edit_open == false && !is_loading_requirements_namespaces">
         <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_existing_requirements">Loading...</progressbar>
         <div ng-show="existing_requirements_load_error">
             <p>
@@ -29,24 +29,24 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="selected_requirements" tree-control="selected_requirements_tree" on-select="selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="selected_requirements" tree-control="selected_requirements_tree" on-select="requirements_selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_existing_requirements && !existing_requirements_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
-            <p style="width:90%;padding:5px">{$ chosen_selected_description $}</p>
+            <p style="width:90%;padding:5px">{$ requirements_chosen_selected_description $}</p>
         </div>
     </div>
 
-    <div class="right" ng-show="edit_open == true" style="overflow:auto;max-height:480px;height:480px">
-        <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_properties">Loading...</progressbar>
-        <div ng-show="properties_load_error">
+    <div class="right" ng-show="requirements_edit_open == true" style="overflow:auto;max-height:480px;height:480px">
+        <progressbar class="progress-striped active" max="100" value="100" ng-show="requirements_is_loading_properties">Loading...</progressbar>
+        <div ng-show="requirements_properties_load_error">
             <p>
                 <font color="red">
-                    Loading properties failed: {{properties_load_error}}
+                    Loading properties failed: {{requirements_properties_load_error}}
                 </font>
             </p>
         </div>
-        <form name="edit_properties" ng-show="!is_loading_properties">
+        <form name="requirements_edit_properties" ng-show="!requirements_is_loading_properties">
             <span ng-repeat="property in selected_requirement.data.properties" ng-switch on="property.type">
                 <ng-form name="property_form">
                 <label ng-show="{$ !property.is_duplicate && property.type != 'confidential' $}">{{ property.name }}</label>
@@ -57,7 +57,7 @@
                     <tr>
                         <td>
                             <select style="width: 60px"  name="operator_value"
-                                    ng-model="operator.value"
+                                    ng-model="property.operator.selected"
                                     ng-required="true"
                                     ng-options="op for op in property.operator.items">
                             </select>
@@ -126,13 +126,6 @@
                                 ng-model="property.value"
                                 ng-required="{$ property.required $}"/>
                         </td>
-
-                        <td>
-                            <span ng-show="property_form.property_value.$invalid && property_form.property_value.$dirty">
-                                <font color="red"><b>Fail!</b></font>
-                            </span>
-                        </td>
-
                         <td>
                             <span ng-show="property_form.property_value.$valid && property_form.operator_value.$valid && !property.is_duplicate">
                                 <span ng-click="add_duplicate_row_clicked(property)"><span class="icon-plus  glyphicon glyphicon-plus  fa fa-plus" /></span>
@@ -140,6 +133,14 @@
 
                             <span ng-show="property.is_duplicate">
                                 <span ng-click="remove_duplicate_row_clicked(property)"><span class="icon-minus  glyphicon glyphicon-minus  fa fa-minus" /></span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td />
+                        <td>
+                            <span ng-show="property_form.property_value.$invalid && property_form.property_value.$dirty">
+                                <font color="red"><b>{$ detect_validity_errors(property_form.property_value) $}</b></font>
                             </span>
                         </td>
                     </tr>
@@ -154,9 +155,9 @@
                     </font>
                 </p>
             </div>
-            <button ng-show="!is_loading_properties" ng-click="cancel_requirement_property_data_edit()" class="btn">Cancel</a>
+            <button ng-show="!requirements_is_loading_properties" ng-click="cancel_requirement_property_data_edit()" class="btn">Cancel</a>
             <button ng-click="save_requirement_property_data()"
-                ng-show="!properties_load_error && !is_loading_properties && selected_requirement.data.properties.length > 0"
+                ng-show="!requirements_properties_load_error && !requirements_is_loading_properties && selected_requirement.data.properties.length > 0"
                 class="btn btn-primary">Save</button>
         </form>
     </div>

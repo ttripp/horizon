@@ -19,6 +19,7 @@ import logging
 
 from django.conf import settings
 from django.core import urlresolvers
+from django.http import HttpResponse  # noqa
 from django import shortcuts
 from django import template
 from django.template.defaultfilters import title  # noqa
@@ -142,9 +143,8 @@ class TogglePause(tables.BatchAction):
         if not api.nova.extension_supported('AdminActions',
                                             request):
             return False
-        self.paused = False
         if not instance:
-            return self.paused
+            return False
         self.paused = instance.status == "PAUSED"
         if self.paused:
             self.current_present_action = UNPAUSE
@@ -184,9 +184,8 @@ class ToggleSuspend(tables.BatchAction):
         if not api.nova.extension_supported('AdminActions',
                                             request):
             return False
-        self.suspended = False
         if not instance:
-            self.suspended
+            return False
         self.suspended = instance.status == "SUSPENDED"
         if self.suspended:
             self.current_present_action = RESUME
@@ -220,6 +219,11 @@ class LaunchLink(tables.LinkAction):
     url = "horizon:project:instances:launch"
     classes = ("btn-launch", "ajax-modal")
     policy_rules = (("compute", "compute:create"),)
+    ajax = True
+
+    def __init__(self, attrs=None, **kwargs):
+        kwargs['preempt'] = True
+        super(LaunchLink, self).__init__(attrs, **kwargs)
 
     def allowed(self, request, datum):
         try:
@@ -245,8 +249,11 @@ class LaunchLink(tables.LinkAction):
             LOG.exception("Failed to retrieve quota information")
             # If we can't get the quota information, leave it to the
             # API to check when launching
-
         return True  # The action should always be displayed
+
+    def single(self, table, request, object_id=None):
+        self.allowed(request, None)
+        return HttpResponse(self.render())
 
 
 class EditInstance(tables.LinkAction):

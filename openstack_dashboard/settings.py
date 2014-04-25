@@ -258,3 +258,16 @@ if DEBUG:
 # below may be ommited, though it should not be harmful
 from openstack_auth import utils as auth_utils
 auth_utils.patch_middleware_get_user()
+
+# TODO(heather): remove token and URL when service support is added
+GRAFFITI_TOKEN = 'permanent admin token here'
+GRAFFITI_URL = 'graffiti server url here'
+GRAFFITI_NAMESPACE_TYPE_MAPPING = '{' \
+    '"OS::GLANCE": {"capabilities": ["image", "snapshot", "volume"]},' \
+    '"APPLICATION::CATEGORIES": {"capabilities": ["image", "snapshot",' \
+    '                                             "volume"]},' \
+    '"COMPUTE": {"requirements": ["image", "snapshot", "volume"]},' \
+    '"TRUST": {"requirements": ["image", "snapshot", "volume"]},' \
+    '"SAMPLES": {"capabilities": ["image", "snapshot", "volume"],' \
+    '            "requirements": ["image", "snapshot", "volume"]}' \
+    '}'

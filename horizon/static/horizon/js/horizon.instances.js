@@ -271,4 +271,37 @@ horizon.addInitFunction(function () {
       }
     }
   });
+
+  $(document).on('click', '#graffiti_filter_link', function (evt) {
+    evt.preventDefault();
+
+    //Get the dom's elements of the create instance modal.
+    var createInstanceModal = $(".modal"),
+        nameField = $("#id_name"),
+        flavorField = $("#id_flavor"),
+        bootSourceField = $("#id_source_type"),
+        imageField = $("#id_image_id");
+
+    //Hide the create instance modal.
+    createInstanceModal.hide();
+
+    //Set some hardcoded values to the fields for now
+    //until we have the graffiti filter modal.
+    nameField.val("Instance Specs Created From Graffiti ");
+    bootSourceField.val("image_id");
+    imageField.val("7f37475b-94b5-42c5-b75c-8f6556eae9ef");
+    flavorField.val("4");
+
+    //Update the displayed fields due to a
+    //progamatical values set.
+    update_launch_source_displayed_fields("#id_source_type");
+
+    //Wait and show the create instance modal for now.
+    //This will be removed and this action will be done on the
+    //click event of the "save" button of the graffiti
+    // filter modal.
+    setInterval(function () {
+        $(".modal").show()
+    }, 3000);
+  });
 });

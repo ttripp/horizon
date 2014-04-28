@@ -37,6 +37,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
     var temp_url = $(".django_data_holder").data('temp-url');
     var temp_token = JSON.stringify($(".django_data_holder").data('temp-token'));
     var obj_type = $(".django_data_holder").data('obj-type');
+    var obj_name = $(".django_data_holder").data('obj-name');
     if ($scope.capabilities_obj_id) {
       $scope.capabilities_old_obj_id = angular.copy($scope.capabilities_obj_id);
     };
@@ -216,9 +217,36 @@ angular.module('hz').directive('editGraffitiCapabilities',
     };
 
     $scope.$on('graffiti:saved', function() {
+      var data = {};
+      data["id"] = $scope.capabilities_obj_id;
+      data["type"] = obj_type;
+      data["name"] = obj_name;
+      data["provider"] = {};
+      data["provider"]["id"] = endpoint_id;
+      data["properties"] = [];
+      data["capabilities"] = [];
+      data["requirements"] = [];
+
+      angular.forEach($scope.selected_capabilities, function(capability) {
+        var data_properties = {};
+        data_properties["capability_type_namespace"] = capability.data.namespace;
+        data_properties["capability_type"] = capability.label;
+        data_properties["properties"] = [];
+        if (capability.data.properties) {
+          // TODO(heather): fail validation if properties are not loaded?
+          angular.forEach(capability.data.properties, function(property) {
+            data_properties["properties"].push({"name": property.name, "value": property.value});
+          });
+        };
+        data["capabilities"].push(data_properties);
+      });
+
+      var put_promise = graffitiService.put_capabilities($scope.capabilities_obj_id, data, service_url, token, function(data, status, headers, config) {
+        console.log("ERROR DURING PUT: " + status);
+      });
+
       $scope.selected_capabilities = [];
       $scope.capabilities_chosen_selected_description = "";
-      console.log('edit controller save');
     });
   }
 ]);

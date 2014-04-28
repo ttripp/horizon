@@ -31,7 +31,8 @@ class GraffitiCapabilitiesAction(workflows.EditGraffitiCapabilitiesAction):
 class GraffitiCapabilities(workflows.EditGraffitiCapabilitiesStep):
     action_class = GraffitiCapabilitiesAction
     depends_on = ('image_id',
-                  'image_type')
+                  'image_type',
+                  'image_name')
 
     def __init__(self, workflow):
         super(GraffitiCapabilities, self).__init__(workflow)
@@ -54,6 +55,7 @@ class GraffitiCapabilities(workflows.EditGraffitiCapabilitiesStep):
                         self).prepare_action_context(request, context)
         self.obj_id = context.get('image_id')
         self.obj_type = context.get('image_type')
+        self.obj_name = context.get('image_name')
         return context
 
 
@@ -90,6 +92,7 @@ class GraffitiRequirements(workflows.EditGraffitiRequirementsStep):
                         self).prepare_action_context(request, context)
         self.obj_id = context.get('image_id')
         self.obj_type = context.get('image_type')
+        self.obj_name = context.get('image_name')
         return context
 
 

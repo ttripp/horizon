@@ -101,6 +101,18 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       return deferred.promise;
     };
 
+    self.put_capabilities = function(obj_id, data, base_uri, token, error_function) {
+      var deferred = $q.defer();
+      $http.defaults.headers.common['Accept'] = 'application/json';
+      $http.defaults.headers.common['X-Auth-Token'] = token;
+
+      $http.put(base_uri + 'resource/' + obj_id, data)
+        .success(function(data) {
+          console.log("put success");
+        }).error(error_function);
+      return deferred.promise;
+    }
+
     /*
      * filter
      */

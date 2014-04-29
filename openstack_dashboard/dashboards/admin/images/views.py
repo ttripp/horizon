@@ -87,6 +87,7 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
                image.properties.get('image_type', '').lower() == \
                'snapshot':
                 image_type = 'OS::Glance::Snapshot'
+            image_name = image.name
 
         except Exception:
             url = reverse('horizon:admin:images:index')
@@ -96,6 +97,7 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
 
         return {'image_id': image_id,
                 'image_type': image_type,
+                'image_name': image_name,
                 'token': token}
 
 

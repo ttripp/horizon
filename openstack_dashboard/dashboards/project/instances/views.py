@@ -44,7 +44,8 @@ from openstack_dashboard.dashboards.project.instances \
     import tabs as project_tabs
 from openstack_dashboard.dashboards.project.instances \
     import workflows as project_workflows
-
+from openstack_dashboard.dashboards.admin.volumes \
+    import workflows as draft_project_workflows
 
 class IndexView(tables.DataTableView):
     table_class = project_tables.InstancesTable
@@ -122,6 +123,27 @@ class IndexView(tables.DataTableView):
                     exceptions.handle(self.request, msg)
         return instances
 
+class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
+    workflow_class = draft_project_workflows.EditCapabilitiesAndRequirements
+
+    def get_initial(self):
+        token = self.request.user.token.id
+        try:
+            # TODO(heather): needs to be a graffiti call
+            pass
+        except Exception:
+            url = reverse('horizon:admin:volumes:index')
+            exceptions.handle(self.request,
+                              _("Unable to retrieve volume tags."),
+                              redirect=url)
+        return {'token': token}
+
+    def get_context_data(self, **kwargs):
+        context_data = super(EditCapabilitiesAndRequirementsView, self). \
+            get_context_data(**kwargs)
+        context_data['token'] = self.request.user.token.id
+        self.token = self.request.user.token.id
+        return context_data
 
 class LaunchInstanceView(workflows.WorkflowView):
     workflow_class = project_workflows.LaunchInstance

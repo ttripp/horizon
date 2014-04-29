@@ -273,7 +273,6 @@ horizon.addInitFunction(function () {
   });
 
   $(document).on('click', '#graffiti_filter_link', function (evt) {
-    evt.preventDefault();
 
     //Get the dom's elements of the create instance modal.
     var createInstanceModal = $(".modal"),

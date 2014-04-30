@@ -30,6 +30,9 @@ VIEW_MOD = 'openstack_dashboard.dashboards.project.instances.views'
 
 
 urlpatterns = patterns(VIEW_MOD,
+    url(r'^filter$',
+            views.FilterView.as_view(),
+                    name='filter'),
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^launch$', views.LaunchInstanceView.as_view(), name='launch'),
     url(r'^(?P<instance_id>[^/]+)/$',

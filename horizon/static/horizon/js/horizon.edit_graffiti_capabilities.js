@@ -58,9 +58,18 @@ angular.module('hz').directive('editGraffitiCapabilities',
         $scope.existing_capabilities_load_error = status + " (" + data.message + ")";});
       existing_capabilities_promise.then(function(existing_capabilities_data) {
         if (existing_capabilities_data) {
-          console.log("got existing capabilities:");
-          console.log(existing_capabilities_data);
-          // TODO: put existing into selected
+          angular.forEach(existing_capabilities_data.capabilities, function(existing_capability) {
+            var capability = {};
+            capability.label = existing_capability.capability_type;
+            capability.onRemove = user_clicks_remove;
+            capability.onEdit = user_clicks_edit;
+            capability.data = {namespace: existing_capability.capability_type_namespace};
+            capability.data.properties = [];
+            angular.forEach(existing_capability.properties, function(property) {
+              capability.data.properties.push({name: property.name, value: property.value});
+            });
+            $scope.selected_capabilities.push(capability);
+          });
         } else {
           console.log("no existing capabilities");
         };
@@ -107,10 +116,15 @@ angular.module('hz').directive('editGraffitiCapabilities',
           break;
         };
       };
+      branch.data.description = properties_data.description;
     };
 
     var user_clicks_edit = function(branch) {
-      if (!branch.data.properties) {
+      if (!branch.data.properties || !branch.data.properties[0].type) {
+        var merge_existing = true;
+        if (!branch.data.properties) {
+          merge_existing = false;
+        };
         $scope.capabilities_is_loading_properties = true;
         $scope.capabilities_properties_load_error = "";
         var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
@@ -121,14 +135,34 @@ angular.module('hz').directive('editGraffitiCapabilities',
           if (properties_data) {
             var output = [];
             if (properties_data.properties) {
+              if (merge_existing) {
+                branch.label = properties_data.name;
+                branch.data.namespace = properties_data.namespace;
+                branch.description = properties_data.description;
+              };
               angular.forEach(properties_data.properties, function(value, key) {
                 if (value && key) {
                   if (value.confidential) {
                     value.type = "confidential";
                   };
-                  value.name = key;
-                  value.value = value.defaultValue;
-                  output.push(value);
+                  if (merge_existing) {
+                    var found = false;
+                    for (var i = 0; i < branch.data.properties.length; i++) {
+                      if (branch.data.properties[i].name.toLowerCase() == key.toLowerCase()) {
+                        branch.data.properties[i].name = key;
+                        branch.data.properties[i].type = value.type;
+                        found = true;
+                        break;
+                      };
+                    };
+                    if (!found) {
+                      branch.data.properties.push({name: key, value: value.defaultValue, type: value.type});
+                    };
+                  } else {
+                    value.name = key;
+                    value.value = value.defaultValue;
+                    output.push(value);
+                  };
                 };
               });
             };
@@ -138,14 +172,31 @@ angular.module('hz').directive('editGraffitiCapabilities',
                   if (value.confidential) {
                     value.type = "confidential";
                   };
-                  value.name = key;
-                  value.value = "";
-                  output.push(value);
+                  if (merge_existing) {
+                    var found = false;
+                    for (var i = 0; i < branch.data.properties.length; i++) {
+                      if (branch.data.properties[i].name.toLowerCase() == key.toLowerCase()) {
+                        branch.data.properties[i].name = key;
+                        branch.data.properties[i].type = value.type;
+                        found = true;
+                        break;
+                      };
+                    };
+                    if (!found) {
+                      branch.data.properties.push({name: key, value: value.defaultValue, type: value.type});
+                    };
+                  } else {
+                    value.name = key;
+                    value.value = "";
+                    output.push(value);
+                  };
                 };
               });
             };
             $scope.selected_capability = branch;
-            $scope.selected_capability.data.properties = output;
+            if (!merge_existing) {
+              $scope.selected_capability.data.properties = output;
+            };
             // save a copy of the original values in case of cancel
             $scope.selected_capability_properties_orig = angular.copy($scope.selected_capability.data.properties);
           };
@@ -235,7 +286,13 @@ angular.module('hz').directive('editGraffitiCapabilities',
         if (capability.data.properties) {
           // TODO(heather): fail validation if properties are not loaded?
           angular.forEach(capability.data.properties, function(property) {
-            data_properties["properties"].push({"name": property.name, "value": property.value});
+            var propertyValue = property.value;
+            if (propertyValue != null && propertyValue != "") {
+              if (property.type == 'integer' || property.type == 'double' || property.type == 'resource_id') {
+                propertyValue = Number(propertyValue);
+              };
+            };
+            data_properties["properties"].push({"name": property.name, "value": propertyValue});
           });
         };
         data["capabilities"].push(data_properties);

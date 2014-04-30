@@ -7,10 +7,20 @@
 {% block modal-header %}{% trans "Filter Tags" %}{% endblock %}
 
 {% block modal-body %}
-
+  <div>
+    <label for="filter_name">Instance Name</label>
+    <input type="text" id="filter_name">
+  </div>  
+  <div> 
+    <label for="filter_flavor">Filter Flavor</label>
+    <input type="text" id="filter_flavor" >
+  </div>
+  <div>    
+    <label for="filter_image">Filter Image</label>
+    <input type="text" id="filter_image">
+  </div>
 {% endblock %}
 
 {% block modal-footer %}
-  <a href="#" class="btn btn-primary pull-right">{% trans "Filter" %}</a>
-  <a href="#" class="btn secondary cancel close">{% trans "Cancel" %}</a>
+  <a href="#" id="filter_apply" class="btn btn-primary pull-right close">{% trans "Filter" %}</a>
 {% endblock %}

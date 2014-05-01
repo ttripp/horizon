@@ -69,6 +69,17 @@ angular.module('hz').directive('editGraffitiCapabilities',
               capability.data.properties.push({name: property.name, value: property.value});
             });
             $scope.selected_capabilities.push(capability);
+            var properties_promise = graffitiService.get_capability_properties(capability.data.namespace, capability.label, temp_url, temp_token, function(data, status, headers, config) {
+              capability.data.is_loading_properties = false;
+              capability.data.properties_load_error = status + " (" + data.message + ")";
+            });
+            properties_promise.then(function(properties_data) {
+              graffitiService.transform_json_properties_to_abn_tree(capability, properties_data);
+              capability.data.is_loading_properties = false;
+            }, function(reason) {
+              capability.data.is_loading_properties = false;
+              capability.data.properties_load_error = reason;
+            });
           });
         } else {
           console.log("no existing capabilities");
@@ -105,6 +116,23 @@ angular.module('hz').directive('editGraffitiCapabilities',
       capability.onRemove = user_clicks_remove;
       capability.onEdit = user_clicks_edit;
       $scope.selected_capabilities.push(capability);
+      if (!branch.data.properties_loaded) {
+        capability.data.is_loading_properties = true;
+        capability.data.properties_load_error = "";
+        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
+          capability.data.is_loading_properties = false;
+          capability.data.properties_load_error = status + " (" + data.message + ")";
+        });
+        properties_promise.then(function(properties_data) {
+          graffitiService.transform_json_properties_to_abn_tree(capability, properties_data);
+          graffitiService.transform_json_properties_to_abn_tree(branch, properties_data);
+          branch.data.properties_loaded = true;
+          capability.data.is_loading_properties = false;
+        }, function(reason) {
+          capability.data.is_loading_properties = false;
+          capability.data.properties_load_error = reason;
+        });
+      };
       $scope.capabilities_edit_open = false;
     };
 
@@ -120,96 +148,9 @@ angular.module('hz').directive('editGraffitiCapabilities',
     };
 
     var user_clicks_edit = function(branch) {
-      if (!branch.data.properties || !branch.data.properties[0].type) {
-        var merge_existing = true;
-        if (!branch.data.properties) {
-          merge_existing = false;
-        };
-        $scope.capabilities_is_loading_properties = true;
-        $scope.capabilities_properties_load_error = "";
-        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
-          $scope.capabilities_is_loading_properties = false;
-          $scope.capabilities_properties_load_error = status + " (" + data.message + ")";
-        });
-        properties_promise.then(function(properties_data) {
-          if (properties_data) {
-            var output = [];
-            if (properties_data.properties) {
-              if (merge_existing) {
-                branch.label = properties_data.name;
-                branch.data.namespace = properties_data.namespace;
-                branch.description = properties_data.description;
-              };
-              angular.forEach(properties_data.properties, function(value, key) {
-                if (value && key) {
-                  if (value.confidential) {
-                    value.type = "confidential";
-                  };
-                  if (merge_existing) {
-                    var found = false;
-                    for (var i = 0; i < branch.data.properties.length; i++) {
-                      if (branch.data.properties[i].name.toLowerCase() == key.toLowerCase()) {
-                        branch.data.properties[i].name = key;
-                        branch.data.properties[i].type = value.type;
-                        found = true;
-                        break;
-                      };
-                    };
-                    if (!found) {
-                      branch.data.properties.push({name: key, value: value.defaultValue, type: value.type});
-                    };
-                  } else {
-                    value.name = key;
-                    value.value = value.defaultValue;
-                    output.push(value);
-                  };
-                };
-              });
-            };
-            if (properties_data.derived_properties) {
-              angular.forEach(properties_data.derived_properties, function(value, key) {
-                if (value && key) {
-                  if (value.confidential) {
-                    value.type = "confidential";
-                  };
-                  if (merge_existing) {
-                    var found = false;
-                    for (var i = 0; i < branch.data.properties.length; i++) {
-                      if (branch.data.properties[i].name.toLowerCase() == key.toLowerCase()) {
-                        branch.data.properties[i].name = key;
-                        branch.data.properties[i].type = value.type;
-                        found = true;
-                        break;
-                      };
-                    };
-                    if (!found) {
-                      branch.data.properties.push({name: key, value: value.defaultValue, type: value.type});
-                    };
-                  } else {
-                    value.name = key;
-                    value.value = "";
-                    output.push(value);
-                  };
-                };
-              });
-            };
-            $scope.selected_capability = branch;
-            if (!merge_existing) {
-              $scope.selected_capability.data.properties = output;
-            };
-            // save a copy of the original values in case of cancel
-            $scope.selected_capability_properties_orig = angular.copy($scope.selected_capability.data.properties);
-          };
-          $scope.capabilities_is_loading_properties = false;
-        }, function(reason) {
-          $scope.capabilities_is_loading_properties = false;
-          $scope.capabilities_load_properties_failed = reason;
-        });
-      } else {
-        $scope.selected_capability = branch;
-        // save a copy of the original values in case of cancel
-        $scope.selected_capability_properties_orig = angular.copy($scope.selected_capability.data.properties);
-      };
+      $scope.selected_capability = branch;
+      // save a copy of the original values in case of cancel
+      $scope.selected_capability_properties_orig = angular.copy($scope.selected_capability.data.properties);
       $scope.capabilities_edit_open = true;
     };
 

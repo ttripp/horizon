@@ -38,15 +38,15 @@
     </div>
 
     <div class="right" ng-show="capabilities_edit_open == true" style="overflow:auto;max-height:480px;height:480px">
-        <progressbar class="progress-striped active" max="100" value="100" ng-show="capabilities_is_loading_properties">Loading...</progressbar>
-        <div ng-show="capabilities_properties_load_error">
+        <progressbar class="progress-striped active" max="100" value="100" ng-show="selected_capability.data.is_loading_properties">Loading...</progressbar>
+        <div ng-show="selected_capability.data.properties_load_error">
             <p>
                 <font color="red">
-                    Loading properties failed: {{capabilities_properties_load_error}}
+                    Loading properties failed: {{selected_capability.data.properties_load_error}}
                 </font>
             </p>
         </div>
-        <form name="capabilities_edit_properties" ng-show="!capabilities_is_loading_properties">
+        <form name="capabilities_edit_properties" ng-show="!selected_capability.data.is_loading_properties">
             <span ng-repeat="property in selected_capability.data.properties" ng-switch on="property.type">
                 <ng-form name="property_form">
                     <label>{{ property.name }}</label>
@@ -129,9 +129,9 @@
                     </font>
                 </p>
             </div>
-            <button ng-show="!capabilities_is_loading_properties" ng-click="cancel_capability_property_data_edit()" class="btn">Cancel</a>
+            <button ng-show="!selected_capability.data.is_loading_properties" ng-click="cancel_capability_property_data_edit()" class="btn">Cancel</a>
             <button ng-click="save_capability_property_data()" 
-                ng-show="!capabilities_properties_load_error && !capabilities_is_loading_properties && selected_capability.data.properties.length > 0"
+                ng-show="!selected_capability.data.properties_load_error && !selected_capability.data.is_loading_properties && selected_capability.data.properties.length > 0"
                 class="btn btn-primary">Save</button>
         </form>
     </div>

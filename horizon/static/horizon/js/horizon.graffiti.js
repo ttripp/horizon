@@ -152,7 +152,7 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
      */
     self.transform_flare_to_abn_tree = function(namespace, node, add_function) {
       node.label = node.name;
-      node.data = {namespace: namespace.namespace};
+      node.data = {namespace: namespace.namespace, properties_loaded: false};
       node.onAdd = add_function;
       if (node.children) {
         node.children.sort(function(a,b) {return a.name.localeCompare(b.name)});
@@ -171,6 +171,77 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       });
       output.push({label: namespace.namespace, children: children, visible: namespace.visible});
       output.sort(function(a,b) {return a.label.localeCompare(b.label)});
+    };
+
+    self.transform_json_properties_to_abn_tree = function(abn_tree_branch, capability) {
+      if (!abn_tree_branch.data.properties) {
+        abn_tree_branch.data.properties = [];
+      };
+      if (capability) {
+        abn_tree_branch.label = capability.name;
+        abn_tree_branch.data.namespace = capability.namespace;
+        abn_tree_branch.description = capability.description;
+      };
+      if (capability.properties) {
+        angular.forEach(capability.properties, function(value, key) {
+          if (value && key) {
+            if (value.confidential) {
+              value.type = "confidential";
+            };
+            var found = false;
+            for (var i = 0; i < abn_tree_branch.data.properties.length; i++) {
+              if (key.toLowerCase() == abn_tree_branch.data.properties[i].name.toLowerCase()) {
+                abn_tree_branch.data.properties[i].name = key;
+                abn_tree_branch.data.properties[i].type = value.type;
+                if (value.description) {
+                  abn_tree_branch.data.properties[i].description = value.description;
+                };
+                if (value.itemType) {
+                  abn_tree_branch.data.properties[i].itemType = value.itemType;
+                };
+                if (value.items) {
+                  abn_tree_branch.data.properties[i].items = value.items;
+                };
+                found = true;
+                break;
+              };
+            };
+            if (!found) {
+              abn_tree_branch.data.properties.push({name: key, value: value.defaultValue, type: value.type, description: value.description, itemType: value.itemType, items: value.items});
+            };
+          };
+        });
+      };
+      if (capability.derived_properties) {
+        angular.forEach(capability.derived_properties, function(value, key) {
+          if (value && key) {
+            if (value.confidential) {
+              value.type = "confidential";
+            };
+            var found = false;
+            for (var i = 0; i < abn_tree_branch.data.properties.length; i++) {
+              if (key.toLowerCase() == abn_tree_branch.data.properties[i].name.toLowerCase()) {
+                abn_tree_branch.data.properties[i].name = key;
+                abn_tree_branch.data.properties[i].type = value.type;
+                if (value.description) {
+                  abn_tree_branch.data.properties[i].description = value.description;
+                };
+                if (value.itemType) {
+                  abn_tree_branch.data.properties[i].itemType = value.itemType;
+                };
+                if (value.items) {
+                  abn_tree_branch.data.properties[i].items = value.items;
+                }
+                found = true;
+                break;
+              };
+            };
+            if (!found) {
+              abn_tree_branch.data.properties.push({name: key, value: value.defaultValue, type: value.type, description: value.description, itemType: value.itemType, items: value.items});
+            };
+          };
+        });
+      };
     };
 
     self.detect_validity_errors = function(property_value) {

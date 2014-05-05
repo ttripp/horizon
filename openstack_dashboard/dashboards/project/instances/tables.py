@@ -836,3 +836,14 @@ class InstancesTable(tables.DataTable):
                        ConsoleLink, LogLink, TogglePause, ToggleSuspend,
                        ResizeLink, SoftRebootInstance, RebootInstance,
                        StopInstance, RebuildInstance, TerminateInstance)
+
+
+class FilterTable(tables.DataTable):
+    name = tables.Column("name",
+                         verbose_name=_("Name"))
+    description = tables.Column("image_name",
+                               verbose_name=_("Description"))
+
+    class Meta:
+        name = "resources"
+        verbose_name = _("Resources")

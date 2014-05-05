@@ -21,6 +21,10 @@
 """
 Views for managing instances.
 """
+
+import urllib2
+import json
+
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django import http
@@ -126,78 +130,26 @@ class FilterView(forms.ModalFormView, tables.DataTableView):
     table_class = project_tables.FilterTable
     template_name = 'project/instances/filter.html'
 
-    def has_more_data(self, table):
-        return self._more
-
     def get_data(self):
-        marker = self.request.GET.get(
-            project_tables.InstancesTable._meta.pagination_param, None)
-        # Gather our instances
-        try:
-            instances, self._more = api.nova.server_list(
-                self.request,
-                search_opts={'marker': marker,
-                             'paginate': True})
-        except Exception:
-            self._more = False
-            instances = []
-            exceptions.handle(self.request,
-                              _('Unable to retrieve instances.'))
+        token = '{"id": "12341234123412341234123412341234",'\
+                 '"user_id": "12341234123412341234123412341234",'\
+                 '"project_id": "12341234123412341234123412341234",'\
+                 '"domain_id": "12341234123412341234123412341234",'\
+                 '"roles": ["admin"]}'
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['X-Auth-Token'] = token
 
-        if instances:
-            try:
-                api.network.servers_update_addresses(self.request, instances)
-            except Exception:
-                exceptions.handle(
-                    self.request,
-                    message=_('Unable to retrieve IP addresses from Neutron.'),
-                    ignore=True)
+        req = urllib2.Request("http://15.125.110.188:21071/1/resource/", headers=headers)
+        f = urllib2.urlopen(req)
+        resources = json.loads(f.read())
+        f.close()
 
-            # Gather our flavors and images and correlate our instances to them
-            try:
-                flavors = api.nova.flavor_list(self.request)
-            except Exception:
-                flavors = []
-                exceptions.handle(self.request, ignore=True)
+        resource_list = []
+        for resource in resources:
+            resource_list.append(resource['resourceHeader'])
 
-            try:
-                # TODO(gabriel): Handle pagination.
-                images, more = api.glance.image_list_detailed(self.request)
-            except Exception:
-                images = []
-                exceptions.handle(self.request, ignore=True)
-
-            full_flavors = SortedDict([(str(flavor.id), flavor)
-                                       for flavor in flavors])
-            image_map = SortedDict([(str(image.id), image)
-                                    for image in images])
-
-            # Loop through instances to get flavor info.
-            for instance in instances:
-                if hasattr(instance, 'image'):
-                    # Instance from image returns dict
-                    if isinstance(instance.image, dict):
-                        if instance.image.get('id') in image_map:
-                            instance.image = image_map[instance.image['id']]
-                    else:
-                        # Instance from volume returns a string
-                        instance.image = {'name':
-                                instance.image if instance.image else _("-")}
-
-                try:
-                    flavor_id = instance.flavor["id"]
-                    if flavor_id in full_flavors:
-                        instance.full_flavor = full_flavors[flavor_id]
-                    else:
-                        # If the flavor_id is not in full_flavors list,
-                        # get it via nova api.
-                        instance.full_flavor = api.nova.flavor_get(
-                            self.request, flavor_id)
-                except Exception:
-                    msg = _('Unable to retrieve instance size information.')
-                    exceptions.handle(self.request, msg)
-        return instances
-
+        return resource_list
 
 class LaunchInstanceView(workflows.WorkflowView):
     workflow_class = project_workflows.LaunchInstance

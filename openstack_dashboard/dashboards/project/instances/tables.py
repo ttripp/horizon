@@ -16,6 +16,7 @@
 
 
 import logging
+import httplib
 
 from django.conf import settings
 from django.core import urlresolvers
@@ -841,8 +842,11 @@ class InstancesTable(tables.DataTable):
 class FilterTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"))
-    description = tables.Column("image_name",
+    description = tables.Column("description",
                                verbose_name=_("Description"))
+
+    def get_object_id(self, data):
+        return data['id']
 
     class Meta:
         name = "resources"

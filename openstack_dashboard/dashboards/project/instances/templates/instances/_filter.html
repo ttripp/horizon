@@ -19,6 +19,7 @@
     <label for="filter_image">Filter Image</label>
     <input type="text" id="filter_image">
   </div>
+  <a href="{% url 'horizon:project:instances:secondfilter' %}" class="btn ajax-modal" id="graffiti_second_filter_link">{% trans "Second Filter" %}</a>
 {% endblock %}
 
 {% block modal-footer %}

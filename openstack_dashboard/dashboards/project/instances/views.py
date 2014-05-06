@@ -140,14 +140,14 @@ class FilterView(forms.ModalFormView, tables.DataTableView):
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
-        req = urllib2.Request("http://15.125.110.188:21071/1/resource/", headers=headers)
+        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=Detail+EQ+'true'", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()
 
         resource_list = []
         for resource in resources:
-            resource_list.append(resource['resourceHeader'])
+            resource_list.append(resource['resourceDetail'])
 
         return resource_list
 

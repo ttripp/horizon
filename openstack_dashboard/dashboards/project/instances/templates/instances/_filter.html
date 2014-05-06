@@ -4,11 +4,18 @@
 
 {% block form_id %}{% endblock %}
 
-{% block modal-header %}{% trans "Filter Tags" %}{% endblock %}
+{% block modal-header %}{% trans "Tagged resources" %}{% endblock %}
 
 {% block modal-body %}
+    <script>
+        $('#filter_apply').click(function(){
+            $('#id_source_type').val('');
+            update_launch_source_displayed_fields();
+        });
+    </script>
 {% endblock %}
 
 {% block modal-footer %}
-  <a href="#" id="filter_apply" class="btn btn-primary pull-right close">{% trans "Filter" %}</a>
+  <a href="#" id="filter_apply" class="btn btn-primary pull-right close" data-dismiss="modal">{% trans "Ok" %}</a>
+  <a href="#" id="filter_cancel" class="btn secondary cancel close" data-dismiss="modal">{% trans "Cancel" %}</a>
 {% endblock %}

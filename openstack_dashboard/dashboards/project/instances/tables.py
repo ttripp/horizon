@@ -845,13 +845,19 @@ class InstancesTable(tables.DataTable):
                        ResizeLink, SoftRebootInstance, RebootInstance,
                        StopInstance, RebuildInstance, TerminateInstance)
 
+def getCapabilities(resource):
+    capabilities = []
+    for capability in resource['capabilities']:
+        capabilities.append(str(capability['capability_type_name']))
+    return capabilities
 
 class FilterTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"))
     description = tables.Column("description",
                                verbose_name=_("Description"))
-    capabilities = tables.Column("description",
+    capabilities = tables.Column(getCapabilities,
+                               wrap_list=True,
                                verbose_name=_("Capabilities"))
 
     def get_object_id(self, data):
@@ -859,5 +865,4 @@ class FilterTable(tables.DataTable):
 
     class Meta:
         name = "resources"
-        verbose_name = _("Resources")
         table_actions = (ResourcesFilterAction, )

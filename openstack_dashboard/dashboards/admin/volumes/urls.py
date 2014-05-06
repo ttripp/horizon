@@ -19,5 +19,8 @@ urlpatterns = patterns('',
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^create_type$', views.CreateVolumeTypeView.as_view(),
         name='create_type'),
+    url(r'^(?P<volume_id>[^/]+)/edit_capabilities_and_requirements/$',
+        views.EditCapabilitiesAndRequirementsView.as_view(),
+        name='edit_capabilities_and_requirements'),
     url(r'^(?P<volume_id>[^/]+)/$', views.DetailView.as_view(), name='detail'),
 )

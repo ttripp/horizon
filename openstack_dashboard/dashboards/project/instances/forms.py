@@ -109,6 +109,11 @@ class RebuildInstanceForm(forms.SelfHandlingForm):
                               redirect=redirect)
         return True
 
+class FilterForm(forms.SelfHandlingForm):
+    description = forms.CharField(label=_("Description"))
+
+    def handle(self, request, data):
+        return true
 
 class DecryptPasswordInstanceForm(forms.SelfHandlingForm):
     instance_id = forms.CharField(widget=forms.HiddenInput())

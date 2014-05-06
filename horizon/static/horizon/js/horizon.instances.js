@@ -271,4 +271,40 @@ horizon.addInitFunction(function () {
       }
     }
   });
+
+  $(document).on('click', '#filter_apply', function (evt) {
+    //Get the dom's elements of the create instance modal.
+    var createInstanceModal = $(".workflow.modal"),
+        firstFilterModal = $("#first_filter_modal"),
+        nameField = $("#id_name"),
+        flavorField = $("#id_flavor"),
+        bootSourceField = $("#id_source_type"),
+        imageField = $("#id_image_id"),
+        filterName = $("#filter_name"),
+        filterFlavor = $("#filter_flavor"),
+        filterImage = $("#filter_image");
+
+    //Update the displayed fields due to a
+    //progamatical values set.
+    bootSourceField.val("image_id");
+    update_launch_source_displayed_fields("#id_source_type");
+    
+    nameField.val(filterName.val());
+    flavorField.val(filterFlavor.val());
+    imageField.val(filterImage.val());
+
+    //Hide the filter instance modal and show the create one.
+    firstFilterModal.modal('hide'); 
+    createInstanceModal.show(); 
+  });
+
+  $(document).on('click', '#second_filter_apply', function (evt) {
+    //Get the dom's elements of the create instance modal.
+    var firstFilterModal = $("#first_filter_modal"),
+        secondFilterModal = $("#second_filter_modal");
+
+    //Hide the second filter instance modal and show the first one.
+    secondFilterModal.modal('hide'); 
+    firstFilterModal.modal('show'); 
+  });
 });

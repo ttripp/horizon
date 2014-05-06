@@ -1,0 +1,15 @@
+{% extends "horizon/client_side/template.html" %}
+{% load horizon %}
+
+{% block id %}edit_capabilities_and_requirements_template{% endblock %}
+
+{% block template %}
+{% jstemplate %}
+<ul class="nav nav-pills btn-group">
+  <li class="tag" data-[[step_slug]]-id="[[data_id]]">
+  <span class="display_name">[[display_name]]</span>
+  </li>
+  <li class="active"><a class="btn btn-primary" href="#add_remove">[[text]]</a></li>
+</ul>
+{% endjstemplate %}
+{% endblock %}

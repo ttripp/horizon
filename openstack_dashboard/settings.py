@@ -258,3 +258,29 @@ if DEBUG:
 # below may be ommited, though it should not be harmful
 from openstack_auth import utils as auth_utils
 auth_utils.patch_middleware_get_user()
+
+# TODO(heather): remove token and URL when service support is added
+GRAFFITI_TEMP_URL = 'http://15.125.110.188:21071/1/'
+GRAFFITI_TOKEN = '{"id": "12341234123412341234123412341234",' \
+                 '"user_id": "12341234123412341234123412341234",' \
+                 '"project_id": "12341234123412341234123412341234",' \
+                 '"domain_id": "12341234123412341234123412341234",' \
+                 '"roles": ["admin"]}'
+GRAFFITI_URL = 'http://15.125.110.188:21075/v1/'
+GRAFFITI_NAMESPACE_TYPE_MAPPING = '{' \
+    '"OS::GLANCE": {},' \
+    '"APPLICATION::CATEGORIES": {"capabilities": ["OS::Glance::Image", ' \
+    '                      "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
+    '"OS::COMPUTE": {"requirements": ["OS::Glance::Image",' \
+    '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
+    '"OS::COMPUTE::GUEST": {"capabilities": ["OS::Glance::Image",' \
+    '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
+    '"OS::COMPUTE::HOST": {"capabilities": ["OS::Glance::Image",' \
+    '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
+    '"TRUST": {"requirements": ["OS::Glance::Image",' \
+    '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
+    '"SAMPLES": {"capabilities": ["OS::Glance::Image",' \
+    '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"],' \
+    '            "requirements": ["OS::Glance::Image", ' \
+    '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]}' \
+    '}'

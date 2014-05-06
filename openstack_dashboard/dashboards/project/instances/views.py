@@ -45,7 +45,6 @@ from openstack_dashboard.dashboards.project.instances \
 from openstack_dashboard.dashboards.project.instances \
     import workflows as project_workflows
 
-
 class IndexView(tables.DataTableView):
     table_class = project_tables.InstancesTable
     template_name = 'project/instances/index.html'
@@ -122,6 +121,21 @@ class IndexView(tables.DataTableView):
                     exceptions.handle(self.request, msg)
         return instances
 
+class FilterView(forms.ModalFormView):
+    form_class = project_forms.FilterForm
+    template_name = 'project/instances/filter.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FilterView, self).get_context_data(**kwargs)
+        return context
+
+class SecondFilterView(forms.ModalFormView):
+    form_class = project_forms.FilterForm
+    template_name = 'project/instances/second_filter.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SecondFilterView, self).get_context_data(**kwargs)
+        return context
 
 class LaunchInstanceView(workflows.WorkflowView):
     workflow_class = project_workflows.LaunchInstance

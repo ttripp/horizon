@@ -1,0 +1,138 @@
+<div>
+    <div class="left" style="margin-left:0px;margin-right:5px">
+        <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_capabilities_namespaces">Loading...</progressbar>
+        <div ng-show="capabilities_namespaces_load_error">
+            <p>
+                <font color="red">
+                    Loading namespaces failed: {{capabilities_namespaces_load_error}}
+                </font>
+            </p>
+        </div>
+        <br/>
+        <div style="height:400px;max-height:400px;overflow:auto">
+            <abn-tree tree-data="available_capabilities" tree-control="capabilities_tree" on-select="capabilities_available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+        </div>
+        <br/>
+        <div ng-show="!is_loading_capabilities_namespaces && !capabilities_namespaces_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
+            <p style="width:90%;padding:5px">{$ capabilities_chosen_available_description $}</p>
+        </div>
+    </div>
+
+    <div class="right" style="margin-left:5px;margin-right:0px" ng-show="capabilities_edit_open == false && !is_loading_capabilities_namespaces">
+        <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_existing_capabilities">Loading...</progressbar>
+        <div ng-show="existing_capabilities_load_error">
+            <p>
+                <font color="red">
+                    Loading existing capabilities failed: {{existing_capabilities_load_error}}
+                </font>
+            </p>
+        </div>
+        <br/>
+        <div style="height:400px;max-height:400px;overflow:auto">
+            <abn-tree tree-data="selected_capabilities" tree-control="selected_capabilities_tree" on-select="capabilities_selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+        </div>
+        <br/>
+        <div ng-show="!is_loading_existing_capabilities && !existing_capabilities_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
+            <p style="width:90%;padding:5px">{$ capabilities_chosen_selected_description $}</p>
+        </div>
+    </div>
+
+    <div class="right" ng-show="capabilities_edit_open == true" style="overflow:auto;max-height:480px;height:480px">
+        <progressbar class="progress-striped active" max="100" value="100" ng-show="selected_capability.data.is_loading_properties">Loading...</progressbar>
+        <div ng-show="selected_capability.data.properties_load_error">
+            <p>
+                <font color="red">
+                    Loading properties failed: {{selected_capability.data.properties_load_error}}
+                </font>
+            </p>
+        </div>
+        <form name="capabilities_edit_properties" ng-show="!selected_capability.data.is_loading_properties">
+            <span ng-repeat="property in selected_capability.data.properties" ng-switch on="property.type">
+                <ng-form name="property_form">
+                    <label>{{ property.name }}</label>
+                    <input ng-switch-when="confidential"
+                        name="property_value"
+                        type="password"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"
+                        ng-pattern="/{$ property.pattern $}/"
+                        ng-minlength="{$ property.minLength $}"
+                        tooltip="{$ property.description $}"
+                        ng-maxlength="{$ property.maxLength $}"/>
+                    <input ng-switch-when="string"
+                        name="property_value"
+                        type="text"
+                        value="{$property.value$}"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"
+                        ng-pattern="/{$ property.pattern $}/"
+                        ng-minlength="{$ property.minLength $}"
+                        tooltip="{$ property.description $}"
+                        ng-maxlength="{$ property.maxLength $}"/>
+                    <select ng-switch-when="choice"
+                        name="property_value"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"
+                        ng-pattern="/{$ property.pattern $}/"
+                        tooltip="{$ property.description $}"
+                        ng-minlength="{$ property.minLength $}"
+                        ng-maxlength="{$ property.maxLength $}"
+                        ng-options="item for item in property.items">
+                    </select>
+                    <input ng-switch-when="integer"
+                        name="property_value"
+                        type="number"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"
+                        ng-pattern="/^[^\.]*$/"
+                        min="{$ property.min $}"
+                        max="{$ property.max $}"
+                        tooltip="{$ property.description $}"
+                        step="1"/>
+                    <input ng-switch-when="double"
+                        name="property_value"
+                        type="number"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"
+                        tooltip="{$ property.description $}"
+                        min="{$ property.min $}"
+                        max="{$ property.max $}"/>
+                    <input ng-switch-when="date"
+                        name="property_value"
+                        type="date"
+                        tooltip="{$ property.description $}"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"/>
+                    <input ng-switch-when="boolean"
+                        name="property_value"
+                        type="checkbox"
+                        tooltip="{$ property.description $}"
+                        ng-model="property.value"/>
+                    <input ng-switch-when="resource_id"
+                        name="property_value"
+                        type="text"
+                        value="{$ property.value $}"
+                        tooltip="{$ property.description $}"
+                        ng-model="property.value"
+                        ng-required="{$ property.required $}"/>
+                    <br/>
+                    <span ng-show="property_form.property_value.$invalid && property_form.property_value.$dirty">
+                        <font color="red"><b>{$ detect_validity_errors(property_form.property_value) $}</b></font>
+                    </span>
+                </ng-form>
+            </span>
+            <br/>
+            <div ng-show="selected_capability.data.properties.length == 0">
+                <p>
+                    <font color="gray">
+                        <i>No properties</i>
+                    </font>
+                </p>
+            </div>
+            <button ng-show="!selected_capability.data.is_loading_properties" ng-click="cancel_capability_property_data_edit()" class="btn">Cancel</a>
+            <button ng-click="save_capability_property_data()" 
+                ng-show="!selected_capability.data.properties_load_error && !selected_capability.data.is_loading_properties && selected_capability.data.properties.length > 0"
+                class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>

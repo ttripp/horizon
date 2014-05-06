@@ -42,6 +42,18 @@ class AdminEditImage(project_tables.EditImage):
         return True
 
 
+class AdminEditCapabilitiesAndRequirements(tables.LinkAction):
+    name = "edit_capabilities_and_requirements"
+    verbose_name = _("Edit Capabilities and Requirements")
+    url = "horizon:admin:images:edit_capabilities_and_requirements"
+    classes = ("btn-edit", "ajax-modal")
+    policy_rules = (("image", "modify_image"),)
+
+    def allowed(self, request, image=None):
+        if image:
+            return True
+
+
 class UpdateRow(tables.Row):
     ajax = True
 
@@ -61,4 +73,5 @@ class AdminImagesTable(project_tables.ImagesTable):
         status_columns = ["status"]
         verbose_name = _("Images")
         table_actions = (AdminCreateImage, AdminDeleteImage)
-        row_actions = (AdminEditImage, AdminDeleteImage)
+        row_actions = (AdminEditImage, AdminEditCapabilitiesAndRequirements,
+                       AdminDeleteImage)

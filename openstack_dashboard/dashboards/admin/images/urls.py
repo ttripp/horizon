@@ -29,6 +29,9 @@ urlpatterns = patterns('openstack_dashboard.dashboards.admin.images.views',
     url(r'^create/$', views.CreateView.as_view(), name='create'),
     url(r'^(?P<image_id>[^/]+)/update/$',
         views.UpdateView.as_view(), name='update'),
+    url(r'^(?P<image_id>[^/]+)/edit_capabilities_and_requirements/$',
+        views.EditCapabilitiesAndRequirementsView.as_view(),
+        name='edit_capabilities_and_requirements'),
     url(r'^(?P<image_id>[^/]+)/detail/$',
         views.DetailView.as_view(), name='detail')
 )

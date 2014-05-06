@@ -18,11 +18,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from horizon import exceptions
 from horizon import tables
+from horizon import workflows
+from horizon.utils import memoized
 
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.project.images.images import views
@@ -30,6 +33,8 @@ from openstack_dashboard.dashboards.project.images.images import views
 from openstack_dashboard.dashboards.admin.images import forms
 from openstack_dashboard.dashboards.admin.images \
     import tables as project_tables
+from openstack_dashboard.dashboards.admin.images \
+    import workflows as image_workflows
 
 
 class IndexView(tables.DataTableView):
@@ -66,6 +71,34 @@ class UpdateView(views.UpdateView):
     template_name = 'admin/images/update.html'
     form_class = forms.AdminUpdateImageForm
     success_url = reverse_lazy('horizon:admin:images:index')
+
+
+class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
+    workflow_class = image_workflows.EditCapabilitiesAndRequirements
+
+    def get_initial(self):
+        image_id = self.kwargs['image_id']
+        token = self.request.user.token.id
+
+        try:
+            image = api.glance.image_get(self.request, image_id)
+            image_type = 'OS::Glance::Image'
+            if image.properties and \
+               image.properties.get('image_type', '').lower() == \
+               'snapshot':
+                image_type = 'OS::Glance::Snapshot'
+            image_name = image.name
+
+        except Exception:
+            url = reverse('horizon:admin:images:index')
+            exceptions.handle(self.request,
+                              _("Unable to retrieve image tags."),
+                              redirect=url)
+
+        return {'image_id': image_id,
+                'image_type': image_type,
+                'image_name': image_name,
+                'token': token}
 
 
 class DetailView(views.DetailView):

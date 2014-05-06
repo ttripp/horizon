@@ -1,4 +1,4 @@
-var horizonApp = angular.module('hz', ['hz.conf', 'hz.utils', 'ngCookies'])
+var horizonApp = angular.module('hz', ['hz.conf', 'hz.utils', 'ngCookies', 'ui.bootstrap', 'angularBootstrapNavTree'])
   .config(['$interpolateProvider', '$httpProvider',
     function ($interpolateProvider, $httpProvider) {
       $interpolateProvider.startSymbol('{$');
@@ -20,4 +20,3 @@ var horizonApp = angular.module('hz', ['hz.conf', 'hz.utils', 'ngCookies'])
         });
       };
     }]);
-

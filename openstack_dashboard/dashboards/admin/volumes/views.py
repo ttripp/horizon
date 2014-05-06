@@ -25,6 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from horizon import exceptions
 from horizon import forms
 from horizon import tables
+from horizon import workflows
 
 from openstack_dashboard.api import cinder
 from openstack_dashboard.api import keystone
@@ -38,6 +39,8 @@ from openstack_dashboard.dashboards.project.volumes \
     import tabs as project_tabs
 from openstack_dashboard.dashboards.project.volumes \
     .volumes import views as volume_views
+from openstack_dashboard.dashboards.admin.volumes \
+    import workflows as volume_workflows
 
 
 class IndexView(tables.MultiTableView, project_tabs.VolumeTableMixIn):
@@ -74,6 +77,40 @@ class IndexView(tables.MultiTableView, project_tabs.VolumeTableMixIn):
             exceptions.handle(self.request,
                               _("Unable to retrieve volume types"))
         return volume_types
+
+
+class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
+    workflow_class = volume_workflows.EditCapabilitiesAndRequirements
+
+    def get_initial(self):
+        volume_id = self.kwargs['volume_id']
+        token = self.request.user.token.id
+
+        try:
+            # TODO(heather): needs to be a graffiti call
+            pass
+
+        except Exception:
+            url = reverse('horizon:admin:volumes:index')
+            exceptions.handle(self.request,
+                              _("Unable to retrieve volume tags."),
+                              redirect=url)
+
+        return {'volume_id': volume_id,
+                'volume_type': 'OS::Cinder::Volume',
+                'token': token}
+
+    def get_context_data(self, **kwargs):
+        context_data = super(EditCapabilitiesAndRequirementsView, self). \
+            get_context_data(**kwargs)
+
+        context_data['token'] = self.request.user.token.id
+        context_data['volume_id'] = kwargs['volume_id']
+
+        self.token = self.request.user.token.id
+        self.volume_id = kwargs['volume_id']
+
+        return context_data
 
 
 class DetailView(volume_views.DetailView):

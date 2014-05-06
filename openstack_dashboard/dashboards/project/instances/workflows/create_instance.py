@@ -89,10 +89,9 @@ class SetInstanceDetailsAction(workflows.Action):
                                initial=1,
                                help_text=_("Number of instances to launch."))
 
-    source_type = forms.ChoiceField(label=_("Instance Boot Source"),
-                                    required=True,
-                                    help_text=_("Choose Your Boot Source "
-                                                "Type."))
+    source_type = forms.CharField(label=_("Boot Source"),
+                                  required=True,
+                                  has_link=True)
 
     instance_snapshot_id = forms.ChoiceField(label=_("Instance Snapshot"),
                                              required=False)
@@ -409,6 +408,7 @@ class SetInstanceDetailsAction(workflows.Action):
 
 class SetInstanceDetails(workflows.Step):
     action_class = SetInstanceDetailsAction
+    template_name = 'project/instances/launch_instance.html'
     depends_on = ("project_id", "user_id")
     contributes = ("source_type", "source_id",
                    "availability_zone", "name", "count", "flavor",

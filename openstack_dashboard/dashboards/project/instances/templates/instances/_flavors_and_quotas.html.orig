@@ -3,7 +3,10 @@
 {% block help_message %}
 {% endblock %}
 
-
+<<<<<<< HEAD
+=======
+<a href="{% url 'horizon:project:instances:filter' %}" class="ajax-modal">{% trans "Launch boot source chooser" %}</a>
+>>>>>>> 97e47a0ef33b5943a9b9724055e60d0315e601b2
 <h4>{% trans "Flavor Details" %}</h4>
 <table class="flavor_table table-striped">
   <tbody>

@@ -90,8 +90,7 @@ class SetInstanceDetailsAction(workflows.Action):
                                help_text=_("Number of instances to launch."))
 
     source_type = forms.CharField(label=_("Boot Source"),
-                                  required=True,
-                                  has_link=True)
+                                  required=True)
 
     instance_snapshot_id = forms.ChoiceField(label=_("Instance Snapshot"),
                                              required=False)

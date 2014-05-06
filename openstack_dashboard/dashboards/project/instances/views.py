@@ -151,6 +151,14 @@ class FilterView(forms.ModalFormView, tables.DataTableView):
 
         return resource_list
 
+class SecondFilterView(forms.ModalFormView):
+    form_class = project_forms.FilterForm
+    template_name = 'project/instances/second_filter.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SecondFilterView, self).get_context_data(**kwargs)
+        return context
+
 class LaunchInstanceView(workflows.WorkflowView):
     workflow_class = project_workflows.LaunchInstance
 

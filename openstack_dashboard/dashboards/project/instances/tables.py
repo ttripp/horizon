@@ -774,6 +774,13 @@ class InstancesFilterAction(tables.FilterAction):
         return [instance for instance in instances
                 if q in instance.name.lower()]
 
+class ResourcesFilterAction(tables.FilterAction):
+
+    def filter(self, table, resources, filter_string):
+        """Naive case-insensitive search."""
+        q = filter_string.lower()
+        return [resource for resource in resources
+                if q in resource.name.lower()]
 
 class InstancesTable(tables.DataTable):
     TASK_STATUS_CHOICES = (
@@ -844,6 +851,8 @@ class FilterTable(tables.DataTable):
                          verbose_name=_("Name"))
     description = tables.Column("description",
                                verbose_name=_("Description"))
+    capabilities = tables.Column("description",
+                               verbose_name=_("Capabilities"))
 
     def get_object_id(self, data):
         return data['id']
@@ -851,3 +860,4 @@ class FilterTable(tables.DataTable):
     class Meta:
         name = "resources"
         verbose_name = _("Resources")
+        table_actions = (ResourcesFilterAction, )

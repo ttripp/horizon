@@ -266,7 +266,7 @@ GRAFFITI_TOKEN = '{"id": "12341234123412341234123412341234",' \
                  '"project_id": "12341234123412341234123412341234",' \
                  '"domain_id": "12341234123412341234123412341234",' \
                  '"roles": ["admin"]}'
-GRAFFITI_URL = 'http://15.125.110.188:21075/v1/'
+GRAFFITI_URL = 'http://192.168.122.1:21075/v1/'
 GRAFFITI_NAMESPACE_TYPE_MAPPING = '{' \
     '"OS::GLANCE": {},' \
     '"APPLICATION::CATEGORIES": {"capabilities": ["OS::Glance::Image", ' \

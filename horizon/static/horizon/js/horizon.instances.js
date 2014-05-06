@@ -272,17 +272,10 @@ horizon.addInitFunction(function () {
     }
   });
 
-  $(document).on('click', '#graffiti_filter_link', function (evt) {
-    //Get the dom's elements of the create instance modal.
-    var createInstanceModal = $(".modal");
-
-    //Hide the create instance modal.
-    createInstanceModal.hide();
-  });
-
   $(document).on('click', '#filter_apply', function (evt) {
     //Get the dom's elements of the create instance modal.
-    var createInstanceModal = $(".modal"),
+    var createInstanceModal = $(".workflow.modal"),
+        firstFilterModal = $("#first_filter_modal"),
         nameField = $("#id_name"),
         flavorField = $("#id_flavor"),
         bootSourceField = $("#id_source_type"),
@@ -300,7 +293,18 @@ horizon.addInitFunction(function () {
     flavorField.val(filterFlavor.val());
     imageField.val(filterImage.val());
 
-    //Hide the create instance modal.
-    createInstanceModal.show();
+    //Hide the filter instance modal and show the create one.
+    firstFilterModal.modal('hide'); 
+    createInstanceModal.show(); 
+  });
+
+  $(document).on('click', '#second_filter_apply', function (evt) {
+    //Get the dom's elements of the create instance modal.
+    var firstFilterModal = $("#first_filter_modal"),
+        secondFilterModal = $("#second_filter_modal");
+
+    //Hide the second filter instance modal and show the first one.
+    secondFilterModal.modal('hide'); 
+    firstFilterModal.modal('show'); 
   });
 });

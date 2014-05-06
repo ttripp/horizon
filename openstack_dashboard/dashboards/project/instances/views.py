@@ -21,6 +21,10 @@
 """
 Views for managing instances.
 """
+
+import urllib2
+import json
+
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django import http
@@ -121,13 +125,40 @@ class IndexView(tables.DataTableView):
                     exceptions.handle(self.request, msg)
         return instances
 
-class FilterView(forms.ModalFormView):
+class FilterView(forms.ModalFormView, tables.DataTableView):
     form_class = project_forms.FilterForm
+    table_class = project_tables.FilterTable
     template_name = 'project/instances/filter.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(FilterView, self).get_context_data(**kwargs)
-        return context
+    def get_data(self):
+        token = '{"id": "12341234123412341234123412341234",'\
+                 '"user_id": "12341234123412341234123412341234",'\
+                 '"project_id": "12341234123412341234123412341234",'\
+                 '"domain_id": "12341234123412341234123412341234",'\
+                 '"roles": ["admin"]}'
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['X-Auth-Token'] = token
+
+        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=Detail+EQ+'true'", headers=headers)
+        f = urllib2.urlopen(req)
+        resources = json.loads(f.read())
+        f.close()
+
+        resource_list = []
+        for resource in resources:
+            resource_list.append(resource['resourceDetail'])
+
+        return resource_list
+
+class SecondFilterView(workflows.WorkflowView):
+    workflow_class = project_workflows.EditCapabilitiesAndRequirements
+    template_name = 'project/instances/second_filter.html'
+    
+    def get_initial(self):
+        token = self.request.user.token.id
+        return {'token': token}
+
 
 class LaunchInstanceView(workflows.WorkflowView):
     workflow_class = project_workflows.LaunchInstance

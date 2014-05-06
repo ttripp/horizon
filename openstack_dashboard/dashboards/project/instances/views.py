@@ -129,13 +129,14 @@ class FilterView(forms.ModalFormView):
         context = super(FilterView, self).get_context_data(**kwargs)
         return context
 
-class SecondFilterView(forms.ModalFormView):
-    form_class = project_forms.FilterForm
+class SecondFilterView(workflows.WorkflowView):
+    workflow_class = project_workflows.EditCapabilitiesAndRequirements
     template_name = 'project/instances/second_filter.html'
+    
+    def get_initial(self):
+        token = self.request.user.token.id
+        return {'token': token}
 
-    def get_context_data(self, **kwargs):
-        context = super(SecondFilterView, self).get_context_data(**kwargs)
-        return context
 
 class LaunchInstanceView(workflows.WorkflowView):
     workflow_class = project_workflows.LaunchInstance

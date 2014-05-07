@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block modal_id %}first_filter_modal{% endblock %}
+{% block modal_id %}source_filter_modal{% endblock %}
 
 {% block form_id %}{% endblock %}
 
@@ -10,9 +10,9 @@
 
 {% block modal-body %}
     <script>
-        $( "#resources" ).click(function(e) {
+        $(".btn.btn-small.btn-launch").click(function(e) {
             var name = e.target.id.slice(15, e.target.id.indexOf("__action_select_resource"));
-            $('#first_filter_modal').modal('hide');
+            $('#source_filter_modal').modal('hide');
             $('#id_source_type').val(name);
         });
     </script>

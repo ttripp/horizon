@@ -2,16 +2,18 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block modal_id %}first_filter_modal{% endblock %}
+{% block modal_id %}flavor_filter_modal{% endblock %}
 
 {% block form_id %}{% endblock %}
 
 {% block modal-header %}{% trans "Tagged flavors" %}{% endblock %}
 
 {% block modal-body %}
-{% endblock %}
-
-{% block modal-footer %}
-  <a href="#" id="filter_apply" class="btn btn-primary pull-right close" data-dismiss="modal">{% trans "Ok" %}</a>
-  <a href="#" id="filter_cancel" class="btn secondary cancel close" data-dismiss="modal">{% trans "Cancel" %}</a>
+    <script>
+        $(".btn.btn-small.btn-launch").click(function(e) {
+            var name = e.target.id.slice(15, e.target.id.indexOf("__action_select_resource"));
+            $('#flavor_filter_modal').modal('hide');
+            $('#id_flavor').val(name);
+        });
+    </script>
 {% endblock %}

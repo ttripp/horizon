@@ -845,7 +845,7 @@ class InstancesTable(tables.DataTable):
                        ResizeLink, SoftRebootInstance, RebootInstance,
                        StopInstance, RebuildInstance, TerminateInstance)
 
-def getCapabilities(resource):
+def getBootSourceCapabilities(resource):
     capabilities = []
     for capability in resource['capabilities']:
         capabilities.append(str(capability['capability_type_name']))
@@ -856,7 +856,7 @@ class FilterTable(tables.DataTable):
                          verbose_name=_("Name"))
     description = tables.Column("description",
                                verbose_name=_("Description"))
-    capabilities = tables.Column(getCapabilities,
+    capabilities = tables.Column(getBootSourceCapabilities,
                                wrap_list=True,
                                verbose_name=_("Capabilities"))
 

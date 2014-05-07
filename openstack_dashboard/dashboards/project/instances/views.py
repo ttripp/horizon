@@ -125,10 +125,37 @@ class IndexView(tables.DataTableView):
                     exceptions.handle(self.request, msg)
         return instances
 
-class FilterView(forms.ModalFormView, tables.DataTableView):
+class SourceFilterView(forms.ModalFormView, tables.DataTableView):
     form_class = project_forms.FilterForm
-    table_class = project_tables.FilterTable
-    template_name = 'project/instances/filter.html'
+    table_class = project_tables.SourceFilterTable
+    template_name = 'project/instances/source_filter.html'
+
+    def get_data(self):
+        token = '{"id": "12341234123412341234123412341234",'\
+                 '"user_id": "12341234123412341234123412341234",'\
+                 '"project_id": "12341234123412341234123412341234",'\
+                 '"domain_id": "12341234123412341234123412341234",'\
+                 '"roles": ["admin"]}'
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['X-Auth-Token'] = token
+
+        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=Detail+EQ+'true'", headers=headers)
+        f = urllib2.urlopen(req)
+        resources = json.loads(f.read())
+        f.close()
+
+        resource_list = []
+        for resource in resources:
+            if resource['resourceDetail']['capabilities'][0]['capability_type_name'].lower() != 'flavor':
+                resource_list.append(resource['resourceDetail'])
+
+        return resource_list
+
+class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
+    form_class = project_forms.FilterForm
+    table_class = project_tables.FlavorFilterTable
+    template_name = 'project/instances/flavor_filter.html'
 
     def get_data(self):
         token = '{"id": "12341234123412341234123412341234",'\

@@ -30,9 +30,12 @@ VIEW_MOD = 'openstack_dashboard.dashboards.project.instances.views'
 
 
 urlpatterns = patterns(VIEW_MOD,
-    url(r'^filter$',
-            views.FilterView.as_view(),
-                    name='filter'),
+    url(r'^sourcefilter$',
+            views.SourceFilterView.as_view(),
+                    name='sourcefilter'),
+    url(r'^flavorfilter$',
+            views.FlavorFilterView.as_view(),
+                    name='flavorfilter'),
     url(r'^secondfilter$',
             views.SecondFilterView.as_view(),
                     name='secondfilter'),

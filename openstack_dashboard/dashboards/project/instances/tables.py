@@ -851,7 +851,23 @@ def getBootSourceCapabilities(resource):
         capabilities.append(str(capability['capability_type_name']))
     return capabilities
 
-class FilterTable(tables.DataTable):
+class SourceFilterTable(tables.DataTable):
+    name = tables.Column("name",
+                         verbose_name=_("Name"))
+    description = tables.Column("description",
+                               verbose_name=_("Description"))
+    capabilities = tables.Column(getBootSourceCapabilities,
+                               wrap_list=True,
+                               verbose_name=_("Capabilities"))
+
+    def get_object_id(self, data):
+        return data['id']
+
+    class Meta:
+        name = "resources"
+        table_actions = (ResourcesFilterAction, )
+
+class FlavorFilterTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"))
     description = tables.Column("description",

@@ -28,8 +28,11 @@
     <div class="input">
       {{ field }}
     </div>
+    {% if field.label == 'Flavor' %}
+        <a href="{% url 'horizon:project:instances:flavorfilter' %}" class="ajax-modal" id="graffiti_filter_link">Launch boot flavor chooser</a>
+    {% endif %}
     {% if field.label == 'Boot Source' %}
-        <a href="{% url 'horizon:project:instances:filter' %}" class="ajax-modal" id="graffiti_filter_link">Launch boot source chooser</a>
+        <a href="{% url 'horizon:project:instances:sourcefilter' %}" class="ajax-modal" id="graffiti_filter_link">Launch boot source chooser</a>
     {% endif %}
   </div>
 {% endfor %}

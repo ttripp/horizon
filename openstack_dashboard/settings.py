@@ -273,6 +273,7 @@ GRAFFITI_NAMESPACE_TYPE_MAPPING = '{' \
     '                      "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
     '"OS::COMPUTE": {"requirements": ["OS::Glance::Image",' \
     '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
+    '"OS::COMPUTE::CPU": {"capabilities": ["OS::COMPUTE::CPU"]},' \
     '"OS::COMPUTE::GUEST": {"capabilities": ["OS::Glance::Image",' \
     '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
     '"OS::COMPUTE::HOST": {"capabilities": ["OS::Glance::Image",' \

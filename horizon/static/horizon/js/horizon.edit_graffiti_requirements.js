@@ -58,9 +58,38 @@ angular.module('hz').directive('editGraffitiRequirements',
         $scope.existing_requirements_load_error = status + " (" + data.message + ")";});
       existing_requirements_promise.then(function(existing_requirements_data) {
         if (existing_requirements_data) {
-          console.log("got existing requirements:");
-          console.log(existing_requirements_data);
-          // TODO: put existing into selected
+          angular.forEach(existing_requirements_data.requirements, function(existing_requirement) {
+            var requirement = {};
+            requirement.label = existing_requirement.capability_type;
+            requirement.onRemove = user_clicks_remove;
+            if (requirement.data.properties && requirement.data.properties.length > 0) {
+              requirement.onEdit = user_clicks_edit;
+            };
+            requirement.data = {namespace: existing_requirement.capability_type_namespace};
+            requirement.data.properties = [];
+            angular.forEach(existing_requirement.properties, function(property) {
+              requirement.data.properties.push({name: property.name, value: property.value});
+            });
+            $scope.selected_requirements.push(requirement);
+            var defaultPropsNS = obj_type + "::Default";
+            if (requirement.data.namespace == defaultPropsNS && requirement.label == "AdditionalProperties") {
+              for (var i = 0; i < requirement.data.properties.length; i++) {
+                requirement.data.properties[i].type = 'string';
+              };
+            } else {
+              var properties_promise = graffitiService.get_capability_properties(requirement.data.namespace, requirement.label, temp_url, temp_token, function(data, status, headers, config) {
+                requirement.data.is_loading_properties = false;
+                requirement.data.properties_load_error = status + " (" + data.message + ")";
+              });
+              properties_promise.then(function(properties_data) {
+                graffitiService.transform_json_properties_to_abn_tree(requirement, properties_data);
+                requirement.data.is_loading_properties = false;
+              }, function(reason) {
+                requirement.data.is_loading_properties = false;
+                requirement.data.properties_load_error = reason;
+              });
+            };
+          });
         } else {
           console.log("no existing capabilities");
         };
@@ -89,14 +118,59 @@ angular.module('hz').directive('editGraffitiRequirements',
       $scope.requirements_chosen_selected_description = branch.description;
     };
 
+    $scope.requirements_is_loading_available = function() {
+      return $scope.is_loading_requirements_namespaces;
+    };
+
+    $scope.requirements_is_loading_selected = function() {
+      return $scope.is_loading_existing_requirements;
+    };
+
     var user_clicks_add = function(branch) {
       var requirement = {};
       requirement.label = branch.label;
       requirement.data = angular.copy(branch.data);
       requirement.description = branch.description;
       requirement.onRemove = user_clicks_remove;
-      requirement.onEdit = user_clicks_edit;
       $scope.selected_requirements.push(requirement);
+      if (!branch.data.properties_loaded) {
+        requirement.data.is_loading_properties = true;
+        requirement.data.properties_load_error = "";
+        var operators_promise = graffitiService.get_property_operators(temp_url, temp_token, function(data, status, headers, config) {
+          requirement.data.is_loading_properties = false;
+          requirement.data.properties_load_error = status + " (" + data.message + ")";
+        });
+        operators_promise.then(function(operators_data) {
+          if (operators_data) {
+            available_operators = [];
+            for (var i = 0; i < operators_data.length; i++) {
+              var item = operators_data[i];
+              var cur_operator = {type: item.constraint, items: item.operators};
+              available_operators.push(cur_operator);
+            };
+          };
+          var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
+            requirement.data.is_loading_properties = false;
+            requirement.data.properties_load_error = status + " (" + data.message + ")";
+          });
+          properties_promise.then(function(properties_data) {
+            graffitiService.transform_json_requirement_properties_to_abn_tree(requirement, properties_data, available_operators);
+            graffitiService.transform_json_requirement_properties_to_abn_tree(branch, properties_data, available_operators);
+            branch.data.properties_loaded = true;
+            requirement.data.is_loading_properties = false;
+            if (branch.data.properties && branch.data.properties.length > 0) {
+              requirement.onEdit = user_clicks_edit;
+            };
+          }, function(reason) {
+            requirement.data.is_loading_properties = false;
+            requirement.data.properties_load_error = reason;
+          });
+        });
+      } else {
+        if (requirement.data.properties && requirement.data.properties.length > 0) {
+          requirement.onEdit = user_clicks_edit;
+        };
+      };
       $scope.requirements_edit_open = false;
     };
 
@@ -111,103 +185,9 @@ angular.module('hz').directive('editGraffitiRequirements',
     };
 
     var user_clicks_edit = function(branch) {
-      if (!branch.data.properties) {
-        $scope.requirements_is_loading_properties = true;
-        $scope.requirements_properties_load_error = "";
-
-        var operators_promise = graffitiService.get_property_operators(temp_url, temp_token, function(data, status, headers, config) {
-          $scope.requirements_is_loading_properties = false;
-          $scope.requirements_properties_load_error = status + " (" + data.message + ")";
-        });
-
-        operators_promise.then(function(operators_data) {
-          if (operators_data) {
-            available_operators = [];
-
-            for (var i=0; i<operators_data.length; i++) {
-                var item = operators_data[i];
-
-                var cur_operator = {};
-                cur_operator.type = item.constraint;
-                cur_operator.items = item.operators;
-
-                available_operators.push(cur_operator);
-            }
-          };
-        });
-
-        var get_operator = function(type) {
-            for (var i=0; i<available_operators.length; i++) {
-                if (available_operators[i].type == type) {
-                    return available_operators[i];
-                }
-            }
-
-            return null;
-        };
-
-        var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
-          $scope.requirements_is_loading_properties = false;
-          $scope.requirements_properties_load_error = status + " (" + data.message + ")";
-        });
-
-        properties_promise.then(function(properties_data) {
-          if (properties_data) {
-            var output = [];
-            if (properties_data.properties) {
-              angular.forEach(properties_data.properties, function(value, key) {
-                if (value && key) {
-                  var type = value.type;
-
-                  if (value.confidential) {
-                    value.type = "confidential";
-                  }
-
-                  value.name = key;
-                  value.value =  "";
-                  value.operator = get_operator(type);
-                  value.is_duplicate = false;
-                  value.required = true;
-                  output.push(value);
-                };
-              });
-            };
-
-            if (properties_data.derived_properties) {
-              angular.forEach(properties_data.derived_properties, function(value, key) {
-                if (value && key) {
-
-                  var type = value.type;
-
-                  if (value.confidential) {
-                    value.type = "confidential";
-                  }
-
-                  value.name = key;
-                  value.value = "";
-                  value.operator = get_operator(type);
-                  value.is_duplicate = false;
-                  value.required = true;
-                  output.push(value);
-                };
-              });
-            };
-
-            $scope.selected_requirement = branch;
-            $scope.selected_requirement.data.properties = output;
-            // save a copy of the original values in case of cancel
-            $scope.selected_requirement_properties_orig = angular.copy($scope.selected_requirement.data.properties);
-          };
-          $scope.requirements_is_loading_properties = false;
-        }, function(reason) {
-          $scope.requirements_is_loading_properties = false;
-          $scope.requirements_load_properties_failed = reason;
-        });
-      } else {
-        $scope.selected_requirement = branch;
-        // save a copy of the original values in case of cancel
-        $scope.selected_requirement_properties_orig = angular.copy($scope.selected_requirement.data.properties);
-      };
+      $scope.selected_requirement = branch;
+      // save a copy of the original values in case of cancel
+      $scope.selected_requirement_properties_orig = angular.copy($scope.selected_requirement.data.properties);
       $scope.requirements_edit_open = true;
     };
 
@@ -269,6 +249,7 @@ angular.module('hz').directive('editGraffitiRequirements',
       $scope.selected_requirements = [];
       $scope.requirements_chosen_selected_description = "";
       console.log('edit controller save');
+      // TODO(heather): implement save
     });
 
     var get_property_base_name = function(name) {

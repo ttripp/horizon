@@ -25,6 +25,8 @@
     Note: the spaces are necessary here.
     {% endcomment %}
     <span class="help-block">{% filter force_escape %} {{ field.help_text }} {% endfilter %} </span>
+    {% if field.label_tag == "Boot Source" %}
+    {% endif %}
     <div class="input">
       {{ field }}
     </div>

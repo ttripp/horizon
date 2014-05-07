@@ -3,7 +3,10 @@
 {% block help_message %}
 {% endblock %}
 
-
+<<<<<<< HEAD
+=======
+<a href="{% url 'horizon:project:instances:filter' %}" class="ajax-modal">{% trans "Launch boot source chooser" %}</a>
+>>>>>>> 97e47a0ef33b5943a9b9724055e60d0315e601b2
 <h4>{% trans "Flavor Details" %}</h4>
 <table class="flavor_table table-striped">
   <tbody>
@@ -41,8 +44,8 @@
 </div>
 
 <script type="text/javascript" charset="utf-8">
-  some_disabled_msg = '{{_("Some flavors not meeting minimum image requirements have been disabled.")|escapejs}}';
-  all_disabled_msg = '{{_("No flavors meet minimum criteria for selected image.")|escapejs}}';
+  some_disabled_msg = '{{_("Some flavors not meeting minimum image requirements have been disabled.")}}';
+  all_disabled_msg = '{{_("No flavors meet minimum criteria for selected image.")}})';
 
   if(typeof horizon.Quota !== 'undefined') {
     horizon.Quota.initWithFlavors({{ flavors|safe|default:"{}" }});

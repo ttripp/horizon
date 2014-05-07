@@ -16,6 +16,7 @@
 
 
 import logging
+import httplib
 
 from django.conf import settings
 from django.core import urlresolvers
@@ -773,6 +774,13 @@ class InstancesFilterAction(tables.FilterAction):
         return [instance for instance in instances
                 if q in instance.name.lower()]
 
+class ResourcesFilterAction(tables.FilterAction):
+
+    def filter(self, table, resources, filter_string):
+        """Naive case-insensitive search."""
+        q = filter_string.lower()
+        return [resource for resource in resources
+                if q in resource.name.lower()]
 
 class InstancesTable(tables.DataTable):
     TASK_STATUS_CHOICES = (
@@ -836,3 +844,25 @@ class InstancesTable(tables.DataTable):
                        ConsoleLink, LogLink, TogglePause, ToggleSuspend,
                        ResizeLink, SoftRebootInstance, RebootInstance,
                        StopInstance, RebuildInstance, TerminateInstance)
+
+def getCapabilities(resource):
+    capabilities = []
+    for capability in resource['capabilities']:
+        capabilities.append(str(capability['capability_type_name']))
+    return capabilities
+
+class FilterTable(tables.DataTable):
+    name = tables.Column("name",
+                         verbose_name=_("Name"))
+    description = tables.Column("description",
+                               verbose_name=_("Description"))
+    capabilities = tables.Column(getCapabilities,
+                               wrap_list=True,
+                               verbose_name=_("Capabilities"))
+
+    def get_object_id(self, data):
+        return data['id']
+
+    class Meta:
+        name = "resources"
+        table_actions = (ResourcesFilterAction, )

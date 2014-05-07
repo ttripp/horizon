@@ -1,6 +1,8 @@
 <div>
+    <div class="header">
+        <div class="help_text">You can specify additional requirements that are required to use this resource properly. Select required capabilities by adding items from the left column to the right column:. To modify requirement properties, click the "edit" button.</div>
+    </div>
     <div class="left" style="margin-left:0px;margin-right:5px">
-        <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_requirements_namespaces">Loading...</progressbar>
         <div ng-show="requirements_namespaces_load_error">
             <p>
                 <font color="red">
@@ -10,7 +12,7 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="available_requirements" tree-control="requirements_tree" on-select="requirements_available_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="available_requirements" tree-control="requirements_tree" on-select="requirements_available_handler(branch)" expand-level="1" initial-selection="" title="Available Requirements" empty-text="No available requirements." is-loading="requirements_is_loading_available()"></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_requirements_namespaces && !requirements_namespaces_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">
@@ -19,7 +21,6 @@
     </div>
 
     <div class="right" style="margin-left:5px;margin-right:0px" ng-show="requirements_edit_open == false && !is_loading_requirements_namespaces">
-        <progressbar class="progress-striped active" max="100" value="100" ng-show="is_loading_existing_requirements">Loading...</progressbar>
         <div ng-show="existing_requirements_load_error">
             <p>
                 <font color="red">
@@ -29,7 +30,7 @@
         </div>
         <br/>
         <div style="height:400px;max-height:400px;overflow:auto">
-            <abn-tree tree-data="selected_requirements" tree-control="selected_requirements_tree" on-select="requirements_selected_handler(branch)" expand-level="1" initial-selection=""></abn-tree>
+            <abn-tree tree-data="selected_requirements" tree-control="selected_requirements_tree" on-select="requirements_selected_handler(branch)" expand-level="1" initial-selection="" title="Selected Requirements" empty-text="No selected requirements." is-loading="requirements_is_loading_selected()"></abn-tree>
         </div>
         <br/>
         <div ng-show="!is_loading_existing_requirements && !existing_requirements_load_error" style="max-height:80px;overflow:auto;border-width:1px;border-style:solid;margin-top:10px">

@@ -382,9 +382,7 @@ class LinkAction(BaseAction):
         passed as the first parameter.
         """
         if not self.url:
-            raise NotImplementedError('A LinkAction class must have a '
-                                      'url attribute or define its own '
-                                      'get_link_url method.')
+            return ""
         if callable(self.url):
             return self.url(datum, **self.kwargs)
         try:

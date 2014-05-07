@@ -167,16 +167,14 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
-        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=Detail+EQ+'true'", headers=headers)
+        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=CAPTYPE+EQ+'Flavor'", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()
-
         resource_list = []
         for resource in resources:
-            if resource['resourceDetail']['capabilities'][0]['capability_type_name'].lower() != 'flavor':
-                resource_list.append(resource['resourceDetail'])
-
+            resource_list.append(resource['resourceHeader'])
+        
         return resource_list
 
 class SecondFilterView(workflows.WorkflowView):

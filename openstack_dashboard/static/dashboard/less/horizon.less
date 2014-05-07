@@ -1627,6 +1627,132 @@ label.log-length {
   margin-top: -60px;
 }
 
+/* Capabilities widget UI */
+.capabilities {
+  min-height: 200px;
+
+  /* Buttons */
+  .btn-group {
+    margin-left: 0px;
+    padding: 2px 10px 0 0;
+    margin-bottom: 0px;
+    border: 1px solid @gray-light;
+    border-bottom: none;
+  }
+  .btn-group .active {
+    float: right;
+  }
+  a.btn-primary:hover {
+    background-color: @link-hover-color;
+  }
+
+  /* Header */
+  .help_text {
+    margin-left: 15px;
+    margin-bottom: 15px;
+  }
+  .angular_tree_title {
+    color: @gray;
+    font-weight: bold;
+    padding-left: 10px;
+    float: left;
+  }
+  input.filter {
+    background: url(/static/dashboard/img/search.png) no-repeat 85px 5px whiteSmoke;
+  }
+  .angular_tree_table_header {
+    background-color: @body-bg;
+    height: 38px;
+    padding-top: 15px;
+    border: 1px solid @table-border-color;
+    border-bottom: none;
+  }
+
+  /* 'Fake table' body */
+  .angular_tree_table {
+    ul.no_results {
+      background-color: @border-color;
+    }
+  }
+  .left {
+    .angular_tree_table_header {
+      width: 320px;
+    }
+    .tree_elements {
+      width: 320px;
+
+      .tree_element {
+        width: 300px;
+      }
+    }
+  }
+  .right {
+    .angular_tree_table_header {
+      width: 281px;
+    }
+    .tree_elements {
+      width: 283px;
+
+      .tree_element {
+        width: 261px;
+      }
+    }
+    .btn {
+      color: @black;
+    }
+    .btn-primary {
+      color: @white;
+    }
+  }
+
+  /* Item lists */
+  .tree_element {
+    padding: 10px;
+    text-align: left;
+    a {
+      margin-top: -5px;
+      margin-bottom: -5px;
+    }
+  }
+  .tree_elements ul.btn-group {
+    width: 308px;
+  }
+  .dark-stripe {
+    background-color: @table-bg-odd;
+  }
+  .light-stripe {
+    background-color: white;
+  }
+  .last-stripe {
+    border-bottom: 1px solid @table-border-color;
+  }
+
+  /* list filtering */
+  .filter {
+    width: 100px;
+    margin: -5px 13px 15px 0px;
+    float: right;
+  }
+  .no_results {
+    border: 1px solid @table-border-color;
+    padding: 10px;
+    opacity: 0.5;
+  }
+  
+  /* buttons */
+  ul .btn-group .btn {
+    display: inline;
+  }
+  #add_element {
+    clear: both;
+  }
+  .add_element {
+    float: right;
+    margin-top: 10px;
+    margin-right: 15px;
+  }
+}
+
 /* Membership widget UI */
 .membership {
   min-height: 200px;

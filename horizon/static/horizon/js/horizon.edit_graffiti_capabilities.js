@@ -62,24 +62,33 @@ angular.module('hz').directive('editGraffitiCapabilities',
             var capability = {};
             capability.label = existing_capability.capability_type;
             capability.onRemove = user_clicks_remove;
-            capability.onEdit = user_clicks_edit;
+            if (capability.data.properties && capability.data.properties.length > 0) {
+              capability.onEdit = user_clicks_edit;
+            };
             capability.data = {namespace: existing_capability.capability_type_namespace};
             capability.data.properties = [];
             angular.forEach(existing_capability.properties, function(property) {
               capability.data.properties.push({name: property.name, value: property.value});
             });
             $scope.selected_capabilities.push(capability);
-            var properties_promise = graffitiService.get_capability_properties(capability.data.namespace, capability.label, temp_url, temp_token, function(data, status, headers, config) {
-              capability.data.is_loading_properties = false;
-              capability.data.properties_load_error = status + " (" + data.message + ")";
-            });
-            properties_promise.then(function(properties_data) {
-              graffitiService.transform_json_properties_to_abn_tree(capability, properties_data);
-              capability.data.is_loading_properties = false;
-            }, function(reason) {
-              capability.data.is_loading_properties = false;
-              capability.data.properties_load_error = reason;
-            });
+            var defaultPropsNS = obj_type + "::Default";
+            if (capability.data.namespace == defaultPropsNS && capability.label == "AdditionalProperties") {
+              for (var i = 0; i < capability.data.properties.length; i++) {
+                capability.data.properties[i].type = 'string';
+              };
+            } else {
+              var properties_promise = graffitiService.get_capability_properties(capability.data.namespace, capability.label, temp_url, temp_token, function(data, status, headers, config) {
+                capability.data.is_loading_properties = false;
+                capability.data.properties_load_error = status + " (" + data.message + ")";
+              });
+              properties_promise.then(function(properties_data) {
+                graffitiService.transform_json_properties_to_abn_tree(capability, properties_data);
+                capability.data.is_loading_properties = false;
+              }, function(reason) {
+                capability.data.is_loading_properties = false;
+                capability.data.properties_load_error = reason;
+              });
+            };
           });
         } else {
           console.log("no existing capabilities");
@@ -108,13 +117,20 @@ angular.module('hz').directive('editGraffitiCapabilities',
       $scope.capabilities_chosen_selected_description = branch.description;
     };
 
+    $scope.capabilities_is_loading_available = function() {
+      return $scope.is_loading_capabilities_namespaces;
+    };
+
+    $scope.capabilities_is_loading_selected = function() {
+      return $scope.is_loading_existing_capabilities;
+    };
+
     var user_clicks_add = function(branch) {
       var capability = {};
       capability.label = branch.label;
       capability.data = angular.copy(branch.data);
       capability.description = branch.description;
       capability.onRemove = user_clicks_remove;
-      capability.onEdit = user_clicks_edit;
       $scope.selected_capabilities.push(capability);
       if (!branch.data.properties_loaded) {
         capability.data.is_loading_properties = true;
@@ -128,10 +144,17 @@ angular.module('hz').directive('editGraffitiCapabilities',
           graffitiService.transform_json_properties_to_abn_tree(branch, properties_data);
           branch.data.properties_loaded = true;
           capability.data.is_loading_properties = false;
+          if (branch.data.properties && branch.data.properties.length > 0) {
+            capability.onEdit = user_clicks_edit;
+          };
         }, function(reason) {
           capability.data.is_loading_properties = false;
           capability.data.properties_load_error = reason;
         });
+      } else {
+        if (capability.data.properties && capability.data.properties.length > 0) {
+          capability.onEdit = user_clicks_edit;
+        };
       };
       $scope.capabilities_edit_open = false;
     };

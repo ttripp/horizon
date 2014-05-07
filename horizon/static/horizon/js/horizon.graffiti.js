@@ -244,6 +244,59 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
       };
     };
 
+    self.transform_json_requirement_properties_to_abn_tree = function(abn_tree_branch, requirement, available_operators) {
+      var get_operator = function(type) {
+        for (var i = 0; i < available_operators.length; i++) {
+          if (available_operators[i].type == type) {
+            return available_operators[i];
+          };
+        };
+        return null;
+      };
+
+      if (!abn_tree_branch.data.properties) {
+        abn_tree_branch.data.properties = [];
+      };
+
+      if (requirement.properties) {
+        angular.forEach(requirement.properties, function(value, key) {
+          if (value && key) {
+            var type = value.type;
+
+            if (value.confidential) {
+              value.type = "confidential";
+            }
+
+            value.name = key;
+            value.value = "";
+            value.operator = get_operator(type);
+            value.is_duplicate = false;
+            value.required = true;
+            abn_tree_branch.data.properties.push(value);
+          };
+        });
+      };
+
+      if (requirement.derived_properties) {
+        angular.forEach(requirement.derived_properties, function(value, key) {
+          if (value && key) {
+            var type = value.type;
+
+            if (value.confidential) {
+              value.type = "confidential";
+            }
+
+            value.name = key;
+            value.value = "";
+            value.operator = get_operator(type);
+            value.is_duplicate = false;
+            value.required = true;
+            abn_tree_branch.data.properties.push(value);
+          };
+        });
+      };
+    };
+
     self.detect_validity_errors = function(property_value) {
       if (property_value) {
         if (property_value.$error.required) {

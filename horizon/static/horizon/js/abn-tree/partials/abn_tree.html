@@ -1,40 +1,35 @@
-<ul class="nav nav-list nav-pills nav-stacked abn-tree">
-    <input type="search" ng-model="abn_filter_value" placeholder="Filter" ng-change="filter_changed()"/><br />
-    <li ng-repeat="row in tree_rows | filter: abn_filter_value | filter:{visible:true} track by row.branch.uid"
+<div class="angular_tree_table">
+  <div class="angular_tree_table_header">
+    <span class="angular_tree_title">{{ title }}</span>
+    <input id="angular_tree_filter" class="filter angular_tree_filter" type="text" placeholder="Filter" name="angular_tree_filter" ng-model="abn_filter_value" ng-change="filter_changed()"/>
+  </div>
+  <progressbar class="progress-striped active" max="100" value="100" ng-show="isLoading()" />
+  <ul class="no_results" ng-show="tree_rows.length == 0 && !isLoading()"><li>{{ emptyText }}</li></ul>
+  <ul class="abn-tree nav tree_elements" ng-show="!isLoading()">
+    <ul ng-repeat="row in tree_rows | filter: abn_filter_value | filter:{visible:true} track by row.branch.uid"
         ng-animate="'abn-tree-animate'"
-        ng-class="'level-' + {$ row.level $} + (row.branch.selected ? ' active':'')"
-        class="abn-tree-row">
-
-            <a ng-click="user_clicks_branch(row.branch)">
-                <table width="100%" border="0" style="margin-bottom:0px">
-                    <tr height="20px">
-                        <td width="85%">
-                            <i ng-class="row.tree_icon"
-                               ng-click="row.branch.expanded = !row.branch.expanded"
-                               class="indented tree-icon"></i>
-                            <span class="indented tree-label">{$ row.label $}</span>
-                        </td>
-                        <td width="15%">
-                            <span class="pull-right">
-                            <i ng-class="row.add_icon"
-                               class="add-icon"
-                               style="max-height:18px"
-                               ng-show="row.branch.selected && row.branch.onAdd != null"
-                               ng-click="user_clicks_add(row.branch)"></i>
-                            <i ng-class="row.edit_icon"
-                               class="edit-icon"
-                               style="max-height:18px"
-                               ng-show="row.branch.selected && row.branch.onEdit != null"
-                               ng-click="user_clicks_edit(row.branch)"></i>
-                            <i ng-class="row.remove_icon"
-                               class="remove-icon"
-                               style="max-height:18px"
-                               ng-show="row.branch.selected && row.branch.onRemove != null"
-                               ng-click="user_clicks_remove(row.branch)"></i>
-                            </span>
-                        </td>
-                    </tr>
-                </table>
-            </a>
-    </li>
-</ul>
+        ng-class="'level-' + {$ row.level $} + (row.branch.selected? ' active':'')"
+        ng-class-odd="'dark-stripe'"
+        ng-class-even="'light-stripe'"
+        class="abn-tree-row nav nav-pills btn-group tree_element{{$last ? ' last-stripe': ''}}"
+        ng-click="row.branch.expanded = !row.branch.expanded">
+      <li ng-click="user_clicks_branch(row.branch)" class="indented">
+        <span class="display_name tree-label">
+          <b style="font-size:20px" ng-show="row.branch.children && row.branch.children.length > 0 && !row.branch.expanded">+</b>
+          <b style="font-size:20px" ng-show="row.branch.children && row.branch.children.length > 0 && row.branch.expanded">-</b>
+          <b style="font-size:20px" ng-show="!row.branch.children || row.branch.children.length == 0">&nbsp;&nbsp;</b>
+          {{ row.label }}
+        </span>
+      </li>
+      <li class="active">
+        <a class="btn btn-primary" ng-show="row.branch.onAdd != null" ng-click="user_clicks_add(row.branch)">+</a>
+      </li>
+      <li class="active">
+        <a class="btn" ng-show="row.branch.onEdit != null" ng-click="user_clicks_edit(row.branch)">Edit</a>
+      </li>
+      <li class="active">
+        <a class="btn btn-primary pull-right" ng-show="row.branch.onRemove != null" ng-click="user_clicks_remove(row.branch)">-</a>
+      </li>
+    </ul>
+  </ul>
+</div>

@@ -81,6 +81,18 @@ class FlavorFilterAction(tables.FilterAction):
         return filter(comp, flavors)
 
 
+class AdminEditCapabilitiesAndRequirements(tables.LinkAction):
+    name = "edit_capabilities_and_requirements"
+    verbose_name = _("Edit extra specs using capabilities")
+    url = "horizon:admin:flavors:edit_capabilities_and_requirements"
+    classes = ("btn-edit", "ajax-modal")
+    policy_rules = (("flavor"),)
+
+
+def allowed(self, request, flavor=None):
+        if flavor:
+            return True
+
 def get_size(flavor):
     return _("%sMB") % flavor.ram
 
@@ -125,4 +137,5 @@ class FlavorsTable(tables.DataTable):
         row_actions = (UpdateFlavor,
                        ModifyAccess,
                        ViewFlavorExtras,
+                       AdminEditCapabilitiesAndRequirements,
                        DeleteFlavor)

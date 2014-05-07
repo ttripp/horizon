@@ -147,7 +147,8 @@ class FilterView(forms.ModalFormView, tables.DataTableView):
 
         resource_list = []
         for resource in resources:
-            resource_list.append(resource['resourceDetail'])
+            if resource['resourceDetail']['capabilities'][0]['capability_type_name'].lower() != 'flavor':
+                resource_list.append(resource['resourceDetail'])
 
         return resource_list
 

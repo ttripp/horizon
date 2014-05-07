@@ -556,8 +556,13 @@ class LaunchInstance(workflows.Workflow):
         dev_mapping_1 = None
         dev_mapping_2 = None
 
-        # image_id = context['source_type']
-        image_id = "949373b8-9a21-492e-9b1c-94a029efe6c1"
+        images = api.glance.image_list_detailed(request)
+        selected_resource = context['source_type']
+
+        for image in images[0]:
+            if image.name == selected_resource:
+                image_id = image.id
+                break
 
         # Determine volume mapping options
         # source_type = context.get('source_type', None)

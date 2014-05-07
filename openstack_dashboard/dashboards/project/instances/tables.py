@@ -782,6 +782,12 @@ class ResourcesFilterAction(tables.FilterAction):
         return [resource for resource in resources
                 if q in resource.name.lower()]
 
+class SelectResourceAction(tables.LinkAction):
+    name = "select_resource"
+    verbose_name = _("Select Resource")
+    classes = ("btn-launch", )
+
+
 class InstancesTable(tables.DataTable):
     TASK_STATUS_CHOICES = (
         (None, True),
@@ -845,24 +851,41 @@ class InstancesTable(tables.DataTable):
                        ResizeLink, SoftRebootInstance, RebootInstance,
                        StopInstance, RebuildInstance, TerminateInstance)
 
-def getCapabilities(resource):
+def getBootSourceCapabilities(resource):
     capabilities = []
     for capability in resource['capabilities']:
         capabilities.append(str(capability['capability_type_name']))
     return capabilities
 
-class FilterTable(tables.DataTable):
+class SourceFilterTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"))
     description = tables.Column("description",
                                verbose_name=_("Description"))
-    capabilities = tables.Column(getCapabilities,
+    capabilities = tables.Column(getBootSourceCapabilities,
                                wrap_list=True,
                                verbose_name=_("Capabilities"))
 
     def get_object_id(self, data):
-        return data['id']
+        return data['name']
 
     class Meta:
         name = "resources"
         table_actions = (ResourcesFilterAction, )
+        multi_select = False
+        row_actions = (SelectResourceAction, )
+
+class FlavorFilterTable(tables.DataTable):
+    name = tables.Column("name",
+                         verbose_name=_("Name"))
+    description = tables.Column("description",
+                               verbose_name=_("Description"))
+
+    def get_object_id(self, data):
+        return data['name']
+
+    class Meta:
+        name = "resources"
+        table_actions = (ResourcesFilterAction, )
+        multi_select = False
+        row_actions = (SelectResourceAction, )

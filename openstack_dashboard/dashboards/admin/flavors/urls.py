@@ -31,5 +31,8 @@ urlpatterns = patterns('openstack_dashboard.dashboards.admin.flavors.views',
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^create/$', views.CreateView.as_view(), name='create'),
     url(r'^(?P<id>[^/]+)/update/$', views.UpdateView.as_view(), name='update'),
+    url(r'^(?P<id>[^/]+)/edit_capabilities_and_requirements/$',
+        views.EditCapabilitiesAndRequirementsView.as_view(),
+        name='edit_capabilities_and_requirements'),
     url(r'^(?P<id>[^/]+)/extras/', include(extras_urls, namespace='extras')),
 )

@@ -81,7 +81,7 @@ class SetInstanceDetailsAction(workflows.Action):
     name = forms.CharField(label=_("Instance Name"),
                            max_length=255)
 
-    flavor = forms.ChoiceField(label=_("Flavor"),
+    flavor = forms.CharField(label=_("Flavor"),
                                help_text=_("Size of image to launch."))
 
     count = forms.IntegerField(label=_("Instance Count"),
@@ -91,39 +91,6 @@ class SetInstanceDetailsAction(workflows.Action):
 
     source_type = forms.CharField(label=_("Boot Source"),
                                   required=True)
-
-    instance_snapshot_id = forms.ChoiceField(label=_("Instance Snapshot"),
-                                             required=False)
-
-    volume_id = forms.ChoiceField(label=_("Volume"), required=False)
-
-    volume_snapshot_id = forms.ChoiceField(label=_("Volume Snapshot"),
-                                               required=False)
-
-    image_id = forms.ChoiceField(
-        label=_("Image Name"),
-        required=False,
-        widget=forms.SelectWidget(
-            data_attrs=('volume_size',),
-            transform=lambda x: ("%s (%s)" % (x.name,
-                                              filesizeformat(x.bytes)))))
-
-    volume_size = forms.IntegerField(label=_("Device size (GB)"),
-                                  required=False,
-                                  help_text=_("Volume size in gigabytes "
-                                              "(integer value)."))
-
-    device_name = forms.CharField(label=_("Device Name"),
-                                  required=False,
-                                  initial="vda",
-                                  help_text=_("Volume mount point (e.g. 'vda' "
-                                              "mounts at '/dev/vda')."))
-
-    delete_on_terminate = forms.BooleanField(label=_("Delete on Terminate"),
-                                             initial=False,
-                                             required=False,
-                                             help_text=_("Delete volume on "
-                                                         "instance terminate"))
 
     class Meta:
         name = _("Details")
@@ -180,100 +147,6 @@ class SetInstanceDetailsAction(workflows.Action):
 
         # Validate our instance source.
         source_type = self.data.get('source_type', None)
-
-        if source_type in ('image_id', 'volume_image_id'):
-            if source_type == 'volume_image_id':
-                if not self.data.get('volume_size', None):
-                    msg = _("You must set volume size")
-                    self._errors['volume_size'] = self.error_class([msg])
-                if not cleaned_data.get('device_name'):
-                    msg = _("You must set device name")
-                    self._errors['device_name'] = self.error_class([msg])
-            if not cleaned_data.get('image_id'):
-                msg = _("You must select an image.")
-                self._errors['image_id'] = self.error_class([msg])
-            else:
-                # Prevents trying to launch an image needing more resources.
-                try:
-                    image_id = cleaned_data.get('image_id')
-                    # We want to retrieve details for a given image,
-                    # however get_available_images uses a cache of image list,
-                    # so it is used instead of image_get to reduce the number
-                    # of API calls.
-                    images = image_utils.get_available_images(
-                        self.request,
-                        self.context.get('project_id'),
-                        self._images_cache)
-                    image = [x for x in images if x.id == image_id][0]
-                except IndexError:
-                    image = None
-
-                try:
-                    flavor_id = cleaned_data.get('flavor')
-                    # We want to retrieve details for a given flavor,
-                    # however flavor_list uses a memoized decorator
-                    # so it is used instead of flavor_get to reduce the number
-                    # of API calls.
-                    flavors = instance_utils.flavor_list(self.request)
-                    flavor = [x for x in flavors if x.id == flavor_id][0]
-                except IndexError:
-                    flavor = None
-
-                if image and flavor:
-                    props_mapping = (("min_ram", "ram"), ("min_disk", "disk"))
-                    for iprop, fprop in props_mapping:
-                        if getattr(image, iprop) > 0 and \
-                                getattr(image, iprop) > getattr(flavor, fprop):
-                            msg = _("The flavor '%(flavor)s' is too small for "
-                                    "requested image.\n"
-                                    "Minimum requirements: "
-                                    "%(min_ram)s MB of RAM and "
-                                    "%(min_disk)s GB of Root Disk." %
-                                    {'flavor': flavor.name,
-                                     'min_ram': image.min_ram,
-                                     'min_disk': image.min_disk})
-                            self._errors['image_id'] = self.error_class([msg])
-                            break  # Not necessary to continue the tests.
-
-                    volume_size = cleaned_data.get('volume_size')
-                    if volume_size and source_type == 'volume_image_id':
-                        volume_size = int(volume_size)
-                        img_gigs = functions.bytes_to_gigabytes(image.size)
-                        smallest_size = max(img_gigs, image.min_disk)
-                        if volume_size < smallest_size:
-                            msg = _("The Volume size is too small for the"
-                                    " '%(image_name)s' image and has to be"
-                                    " greater than or equal to "
-                                    "'%(smallest_size)d' GB." %
-                                    {'image_name': image.name,
-                                     'smallest_size': smallest_size})
-                            self._errors['volume_size'] = self.error_class(
-                                [msg])
-
-        elif source_type == 'instance_snapshot_id':
-            if not cleaned_data['instance_snapshot_id']:
-                msg = _("You must select a snapshot.")
-                self._errors['instance_snapshot_id'] = self.error_class([msg])
-
-        elif source_type == 'volume_id':
-            if not cleaned_data.get('volume_id'):
-                msg = _("You must select a volume.")
-                self._errors['volume_id'] = self.error_class([msg])
-            # Prevent launching multiple instances with the same volume.
-            # TODO(gabriel): is it safe to launch multiple instances with
-            # a snapshot since it should be cloned to new volumes?
-            if count > 1:
-                msg = _('Launching multiple instances is only supported for '
-                        'images and instance snapshots.')
-                raise forms.ValidationError(msg)
-
-        elif source_type == 'volume_snapshot_id':
-            if not cleaned_data.get('volume_snapshot_id'):
-                msg = _("You must select a snapshot.")
-                self._errors['volume_snapshot_id'] = self.error_class([msg])
-            if not cleaned_data.get('device_name'):
-                msg = _("You must set device name")
-                self._errors['device_name'] = self.error_class([msg])
 
         return cleaned_data
 
@@ -683,28 +556,42 @@ class LaunchInstance(workflows.Workflow):
         dev_mapping_1 = None
         dev_mapping_2 = None
 
-        image_id = ''
+        flavors = api.nova.flavor_list(request)
+        selected_flavor = context['flavor']
+
+        for flavor in flavors:
+            if flavor.name == selected_flavor:
+                flavor_id = flavor.id
+                break
+
+        images = api.glance.image_list_detailed(request)
+        selected_resource = context['source_type']
+
+        for image in images[0]:
+            if image.name == selected_resource:
+                image_id = image.id
+                break
 
         # Determine volume mapping options
-        source_type = context.get('source_type', None)
-        if source_type in ['image_id', 'instance_snapshot_id']:
-            image_id = context['source_id']
-        elif source_type in ['volume_id', 'volume_snapshot_id']:
-            dev_mapping_1 = {context['device_name']: '%s::%s' %
-                                                     (context['source_id'],
-                           int(bool(context['delete_on_terminate'])))}
-        elif source_type == 'volume_image_id':
-            dev_mapping_2 = [
-                {'device_name': str(context['device_name']),
-                 'source_type': 'image',
-                 'destination_type': 'volume',
-                 'delete_on_termination':
-                     int(bool(context['delete_on_terminate'])),
-                 'uuid': context['source_id'],
-                 'boot_index': '0',
-                 'volume_size': context['volume_size']
-                 }
-            ]
+        # source_type = context.get('source_type', None)
+        # if source_type in ['image_id', 'instance_snapshot_id']:
+        #     image_id = context['source_id']
+        # elif source_type in ['volume_id', 'volume_snapshot_id']:
+        #     dev_mapping_1 = {context['device_name']: '%s::%s' %
+        #                                              (context['source_id'],
+        #                    int(bool(context['delete_on_terminate'])))}
+        # elif source_type == 'volume_image_id':
+        #     dev_mapping_2 = [
+        #         {'device_name': str(context['device_name']),
+        #          'source_type': 'image',
+        #          'destination_type': 'volume',
+        #          'delete_on_termination':
+        #              int(bool(context['delete_on_terminate'])),
+        #          'uuid': context['source_id'],
+        #          'boot_index': '0',
+        #          'volume_size': context['volume_size']
+        #          }
+        #     ]
 
         netids = context.get('network_id', None)
         if netids:
@@ -741,7 +628,7 @@ class LaunchInstance(workflows.Workflow):
             api.nova.server_create(request,
                                    context['name'],
                                    image_id,
-                                   context['flavor'],
+                                   flavor_id,
                                    context['keypair_id'],
                                    normalize_newlines(custom_script),
                                    context['security_group_ids'],

@@ -25,10 +25,14 @@
     Note: the spaces are necessary here.
     {% endcomment %}
     <span class="help-block">{% filter force_escape %} {{ field.help_text }} {% endfilter %} </span>
-    {% if field.label_tag == "Boot Source" %}
-    {% endif %}
     <div class="input">
       {{ field }}
     </div>
+    {% if field.label == 'Flavor' %}
+        <a href="{% url 'horizon:project:instances:flavorfilter' %}" class="ajax-modal" id="graffiti_filter_link">Flavor Chooser</a>
+    {% endif %}
+    {% if field.label == 'Boot Source' %}
+        <a href="{% url 'horizon:project:instances:sourcefilter' %}" class="ajax-modal" id="graffiti_filter_link">Boot Source Chooser</a>
+    {% endif %}
   </div>
 {% endfor %}

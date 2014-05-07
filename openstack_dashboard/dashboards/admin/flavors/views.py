@@ -18,6 +18,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
@@ -80,3 +81,37 @@ class UpdateView(workflows.WorkflowView):
                 'disk_gb': flavor.disk,
                 'swap_mb': flavor.swap or 0,
                 'eph_gb': getattr(flavor, 'OS-FLV-EXT-DATA:ephemeral', None)}
+
+
+class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
+    workflow_class = flavor_workflows.EditCapabilitiesAndRequirements
+
+    def get_initial(self):
+        flavor_id = self.kwargs['id']
+        token = self.request.user.token.id
+
+        try:
+            # TODO(heather): needs to be a graffiti call
+            pass
+
+        except Exception:
+            url = reverse('horizon:admin:flavors:index')
+            exceptions.handle(self.request,
+                              _("Unable to retrieve flavor tags."),
+                              redirect=url)
+
+        return {'flavor_id': flavor_id,
+                'flavor_type': 'OS::COMPUTE::CPU',
+                'token': token}
+
+    def get_context_data(self, **kwargs):
+        context_data = super(EditCapabilitiesAndRequirementsView, self). \
+            get_context_data(**kwargs)
+
+        context_data['token'] = self.request.user.token.id
+        context_data['flavor_id'] = kwargs['id']
+
+        self.token = self.request.user.token.id
+        self.flavor_id = kwargs['id']
+
+        return context_data

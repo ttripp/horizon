@@ -556,6 +556,14 @@ class LaunchInstance(workflows.Workflow):
         dev_mapping_1 = None
         dev_mapping_2 = None
 
+        flavors = api.nova.flavor_list(request)
+        selected_flavor = context['flavor']
+
+        for flavor in flavors:
+            if flavor.name == selected_flavor:
+                flavor_id = flavor.id
+                break
+
         images = api.glance.image_list_detailed(request)
         selected_resource = context['source_type']
 
@@ -620,7 +628,7 @@ class LaunchInstance(workflows.Workflow):
             api.nova.server_create(request,
                                    context['name'],
                                    image_id,
-                                   context['flavor'],
+                                   flavor_id,
                                    context['keypair_id'],
                                    normalize_newlines(custom_script),
                                    context['security_group_ids'],

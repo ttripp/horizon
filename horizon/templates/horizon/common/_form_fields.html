@@ -29,10 +29,10 @@
       {{ field }}
     </div>
     {% if field.label == 'Flavor' %}
-        <a href="{% url 'horizon:project:instances:flavorfilter' %}" class="ajax-modal" id="graffiti_filter_link">Launch boot flavor chooser</a>
+        <a href="{% url 'horizon:project:instances:flavorfilter' %}" class="ajax-modal" id="graffiti_filter_link">Flavor Chooser</a>
     {% endif %}
     {% if field.label == 'Boot Source' %}
-        <a href="{% url 'horizon:project:instances:sourcefilter' %}" class="ajax-modal" id="graffiti_filter_link">Launch boot source chooser</a>
+        <a href="{% url 'horizon:project:instances:sourcefilter' %}" class="ajax-modal" id="graffiti_filter_link">Boot Source Chooser</a>
     {% endif %}
   </div>
 {% endfor %}

@@ -782,6 +782,12 @@ class ResourcesFilterAction(tables.FilterAction):
         return [resource for resource in resources
                 if q in resource.name.lower()]
 
+class SelectResourceAction(tables.LinkAction):
+    name = "select_resource"
+    verbose_name = _("Select Resource")
+    classes = ("btn-launch", )
+
+
 class InstancesTable(tables.DataTable):
     TASK_STATUS_CHOICES = (
         (None, True),
@@ -861,8 +867,10 @@ class FilterTable(tables.DataTable):
                                verbose_name=_("Capabilities"))
 
     def get_object_id(self, data):
-        return data['id']
+        return data['name']
 
     class Meta:
         name = "resources"
         table_actions = (ResourcesFilterAction, )
+        multi_select = False
+        row_actions = (SelectResourceAction, )

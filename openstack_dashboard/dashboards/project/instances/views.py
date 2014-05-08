@@ -25,6 +25,9 @@ Views for managing instances.
 import urllib2
 import json
 
+from openstack_dashboard.dashboards.project.images \
+    import utils as image_utils
+
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django import http
@@ -142,7 +145,18 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
         resources = json.loads(f.read())
         f.close()
 
-        return resources
+        boot_images = image_utils.get_available_images(self.request,
+                                            self.request.user.project_id)
+        boot_images_ids = []
+        for image in boot_images:
+            boot_images_ids.append(image.id)
+
+        boot_resources = []
+        for resource in resources:
+            if resource['id'] in boot_images_ids:
+                boot_resources.append(resource)
+
+        return boot_resources
 
 class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
     form_class = project_forms.FilterForm

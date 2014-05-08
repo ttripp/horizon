@@ -864,6 +864,7 @@ class SourceFilterTable(tables.DataTable):
                                verbose_name=_("Description"))
     capabilities = tables.Column(getBootSourceCapabilities,
                                wrap_list=True,
+                               attrs={"class": "hide"},
                                verbose_name=_("Capabilities"))
 
     def get_object_id(self, data):
@@ -884,7 +885,9 @@ class FlavorFilterTable(tables.DataTable):
                          verbose_name=_("Disk"))
     vcpus = tables.Column("vcpus",
                          verbose_name=_("VCPUs"))
-    cap = tables.Column("cap", verbose_name=("Capabilities"))
+    cap = tables.Column("cap", 
+                        hidden=True,
+                        verbose_name=("Capabilities"))
 
     def get_object_id(self, data):
         return data['name']

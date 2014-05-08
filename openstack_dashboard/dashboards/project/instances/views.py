@@ -150,21 +150,25 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
     template_name = 'project/instances/flavor_filter.html'
 
     def get_data(self):
-        #response format until we have the servcie
-        f = '[{"properties":[{"name":"ram","value":"1024"},{"name":"disk","value":"0"},{"name":"vcpus","value":"2"}],"type":"OS::COMPUTE::CPU","id":"451","capabilities":[],"name":"m1.heat"},{"properties":[{"name":"ram","value":"64"},{"name":"disk","value":"0"},{"name":"vcpus","value":"1"}],"type":"OS::COMPUTE::CPU","id":"42","capabilities":[{"capability_type_namespace":"OS::COMPUTE::CPU","properties":[{"name":"<in> rdtscp <and> aes","value":"<in> rdtscp <and> aes"}],"capability_type":"features"}],"name":"m1.nano"},{"properties":[{"name":"ram","value":"512"},{"name":"disk","value":"1"},{"name":"vcpus","value":"1"}],"type":"OS::COMPUTE::CPU","id":"1","capabilities":[],"name":"m1.tiny"},{"properties":[{"name":"ram","value":"4096"},{"name":"disk","value":"40"},{"name":"vcpus","value":"2"}],"type":"OS::COMPUTE::CPU","id":"3","capabilities":[],"name":"m1.medium"},{"properties":[{"name":"ram","value":"2048"},{"name":"disk","value":"20"},{"name":"vcpus","value":"1"}],"type":"OS::COMPUTE::CPU","id":"2","capabilities":[],"name":"m1.small"},{"properties":[{"name":"ram","value":"16384"},{"name":"disk","value":"160"},{"name":"vcpus","value":"8"}],"type":"OS::COMPUTE::CPU","id":"5","capabilities":[],"name":"m1.xlarge"},{"properties":[{"name":"ram","value":"8192"},{"name":"disk","value":"80"},{"name":"vcpus","value":"4"}],"type":"OS::COMPUTE::CPU","id":"4","capabilities":[{"capability_type_namespace":"OS::COMPUTE::CPU","properties":[{"name":"vendor","value":"Intel"}],"capability_type":"vendor"},{"capability_type_namespace":"OS::COMPUTE::CPU","properties":[{"name":"<in> <and> rdtscp <and> ht","value":"<in> <and> rdtscp <and> ht"}],"capability_type":"features"}],"name":"m1.large"},{"properties":[{"name":"ram","value":"128"},{"name":"disk","value":"0"},{"name":"vcpus","value":"1"}],"type":"OS::COMPUTE::CPU","id":"84","capabilities":[],"name":"m1.micro"}]' 
-        resources = json.loads(f)
+        token = self.request.user.token.id
+        headers = {}
+        headers['Accept'] = 'application/json'
+        headers['X-Auth-Token'] = token
+
+        req = urllib2.Request("http://127.0.0.1:21075/v1/resource?resource_type=OS::COMPUTE::CPU", headers=headers)
+        f = urllib2.urlopen(req)
+        resources = json.loads(f.read())
+
         resource_list = []
         for resource in resources:
+            print(resource)
             list_element = {}
             list_element['id'] = resource['id']
             list_element['name'] = resource['name']
-            for prop in resource['properties']:
-                if prop['name'] == 'ram':
-                    list_element['ram'] = prop['value']
-                elif prop['name'] == 'disk':
-                    list_element['disk'] = prop['value']
-                elif prop['name'] == 'vcpus':
-                    list_element['vcpus'] = prop['value']
+            list_element['ram'] = resource['properties']['ram']
+            list_element['disk'] = resource['properties']['disk']
+            list_element['vcpus'] = resource['properties']['vcpus']
+            print(resource['capabilities'])
             resource_list.append(list_element)
         
         return resource_list

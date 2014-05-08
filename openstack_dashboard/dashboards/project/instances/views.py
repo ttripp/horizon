@@ -175,14 +175,13 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
 
         resource_list = []
         for resource in resources:
-            print(resource)
             list_element = {}
             list_element['id'] = resource['id']
             list_element['name'] = resource['name']
             list_element['ram'] = resource['properties']['ram']
             list_element['disk'] = resource['properties']['disk']
             list_element['vcpus'] = resource['properties']['vcpus']
-            print(resource['capabilities'])
+            list_element['cap'] = resource['capabilities']
             resource_list.append(list_element)
         
         return resource_list

@@ -884,6 +884,7 @@ class FlavorFilterTable(tables.DataTable):
                          verbose_name=_("Disk"))
     vcpus = tables.Column("vcpus",
                          verbose_name=_("VCPUs"))
+    cap = tables.Column("cap", verbose_name=("Capabilities"))
 
     def get_object_id(self, data):
         return data['name']

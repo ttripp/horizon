@@ -19,7 +19,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
       restrict: 'AEC',
       replace: true,
       templateUrl: '/static/horizon/js/angular/graffiti/partials/edit_graffiti_capabilities.html',
-      controller: 'EditGraffitiCapabilitiesController',
+      controller: 'EditGraffitiCapabilitiesController'
     }
   })
 .controller('EditGraffitiCapabilitiesController',
@@ -103,7 +103,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
       load_state = load_state_enum.TAB;
       var old_obj_id = angular.copy($scope.capabilities_obj_id);
     };
-    $scope.capabilities_obj_id = $(".django_data_holder").data('obj-id');
+    $scope.capabilities_obj_id = $(".django_data_holder").data('obj-id').toString();
     if (old_obj_id && old_obj_id != $scope.capabilities_obj_id) {
       load_state = load_state_enum.RELOAD;
     };
@@ -304,13 +304,10 @@ angular.module('hz').directive('editGraffitiCapabilities',
         data_properties["properties"] = {};
         if (capability.data.properties) {
           angular.forEach(capability.data.properties, function(property) {
-            var propertyValue = property.value;
-            if (propertyValue != null && propertyValue != "") {
-              if (property.type == 'integer' || property.type == 'double' || property.type == 'resource_id') {
-                propertyValue = Number(propertyValue);
-              };
+            if (property.value == null) {
+              property.value = "";
             };
-	        data_properties["properties"][property.name] = propertyValue;
+	        data_properties["properties"][property.name] = property.value.toString();
           });
         };
         data["capabilities"].push(data_properties);

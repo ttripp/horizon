@@ -16,7 +16,7 @@
 
 
 import logging
-import httplib
+import json
 
 from django.conf import settings
 from django.core import urlresolvers
@@ -854,7 +854,7 @@ class InstancesTable(tables.DataTable):
 def getBootSourceCapabilities(resource):
     capabilities = []
     for capability in resource['capabilities']:
-        capabilities.append(capability['properties'])
+        capabilities.append(str(capability['capability_type']))
     return capabilities
 
 class SourceFilterTable(tables.DataTable):
@@ -864,6 +864,7 @@ class SourceFilterTable(tables.DataTable):
                                verbose_name=_("Description"))
     capabilities = tables.Column(getBootSourceCapabilities,
                                wrap_list=True,
+                               attrs={"class": "hide"},
                                verbose_name=_("Capabilities"))
 
     def get_object_id(self, data):
@@ -884,6 +885,9 @@ class FlavorFilterTable(tables.DataTable):
                          verbose_name=_("Disk"))
     vcpus = tables.Column("vcpus",
                          verbose_name=_("VCPUs"))
+    cap = tables.Column("cap", 
+                        hidden=True,
+                        verbose_name=("Capabilities"))
 
     def get_object_id(self, data):
         return data['name']

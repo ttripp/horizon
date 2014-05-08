@@ -169,7 +169,7 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
-        req = urllib2.Request("http://127.0.0.1:21075/v1/resource?resource_type=OS::COMPUTE::CPU", headers=headers)
+        req = urllib2.Request("http://127.0.0.1.15:21075/v1/resource?resource_type=OS::Nova::Flavor", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
 

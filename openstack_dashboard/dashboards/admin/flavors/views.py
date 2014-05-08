@@ -101,7 +101,7 @@ class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
                               redirect=url)
 
         return {'flavor_id': flavor_id,
-                'flavor_type': 'OS::COMPUTE::CPU',
+                'flavor_type': 'OS::Nova::Flavor',
                 'token': token}
 
     def get_context_data(self, **kwargs):

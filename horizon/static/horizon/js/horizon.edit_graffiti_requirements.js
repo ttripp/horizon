@@ -103,6 +103,7 @@ angular.module('hz').directive('editGraffitiRequirements',
       $scope.selected_requirements = [];
       $scope.is_loading_requirements_namespaces = true;
       $scope.is_loading_existing_requirements = true;
+      $scope.requirements_existing_load_error = "";
       var first_load = true;
       var available_operators = [];
     } else {
@@ -126,6 +127,30 @@ angular.module('hz').directive('editGraffitiRequirements',
       return $scope.is_loading_existing_requirements;
     };
 
+    $scope.requirements_is_error_available = function() {
+      if (!$scope.is_loading_requirements_namespaces) {
+        if ($scope.requirements_namespaces_load_error) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    $scope.requirements_get_error_text_available = function() {
+      return $scope.requirements_namespace_load_error;
+    };
+
+    $scope.requirements_is_error_existing = function() {
+      if($scope.requirements_existing_load_error) {
+        return true;
+      }
+      return false;
+    };
+
+    $scope.requirements_get_error_text_existing = function() {
+      return $scope.requirements_existing_load_error;
+    };
+
     var user_clicks_add = function(branch) {
       var requirement = {};
       requirement.label = branch.label;
@@ -138,7 +163,7 @@ angular.module('hz').directive('editGraffitiRequirements',
         requirement.data.properties_load_error = "";
         var operators_promise = graffitiService.get_property_operators(temp_url, temp_token, function(data, status, headers, config) {
           requirement.data.is_loading_properties = false;
-          requirement.data.properties_load_error = status + " (" + data.message + ")";
+          $scope.requirements_existing_load_error = status + " (" + data.message + ")";
         });
         operators_promise.then(function(operators_data) {
           if (operators_data) {
@@ -151,7 +176,7 @@ angular.module('hz').directive('editGraffitiRequirements',
           };
           var properties_promise = graffitiService.get_capability_properties(branch.data.namespace, branch.label, temp_url, temp_token, function(data, status, headers, config) {
             requirement.data.is_loading_properties = false;
-            requirement.data.properties_load_error = status + " (" + data.message + ")";
+            $scope.requirements_existing_load_error = status + " (" + data.message + ")";
           });
           properties_promise.then(function(properties_data) {
             graffitiService.transform_json_requirement_properties_to_abn_tree(requirement, properties_data, available_operators);
@@ -163,7 +188,7 @@ angular.module('hz').directive('editGraffitiRequirements',
             };
           }, function(reason) {
             requirement.data.is_loading_properties = false;
-            requirement.data.properties_load_error = reason;
+            $scope.requirements_existing_load_error = reason;
           });
         });
       } else {
@@ -227,14 +252,14 @@ angular.module('hz').directive('editGraffitiRequirements',
             $scope.requirements_namespaces_load_error = status + " (" + data.message + ")";
           });
           children_promise.then(function(requirement_data) {
-            var r_data = angular.copy(requirement_data);
-            graffitiService.transform_json_namespaces_to_abn_tree(namespace, r_data, user_clicks_add, output);
+            if (requirement_data) {
+              var r_data = angular.copy(requirement_data);
+              graffitiService.transform_json_namespaces_to_abn_tree(namespace, r_data, user_clicks_add, output);
+            };
             if (++namespaces_loaded_count == namespace_data.length) {
               graffitiService.filter_namespaces(output, namespace_type_mapping, obj_type, "requirements");
               $scope.available_requirements = output;
               $scope.is_loading_requirements_namespaces = false;
-              // TODO(heather): Take this line out!
-              $scope.is_loading_existing_requirements = false;
             };
           }, function(reason) {
           });

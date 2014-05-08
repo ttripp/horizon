@@ -266,14 +266,16 @@ GRAFFITI_TOKEN = '{"id": "12341234123412341234123412341234",' \
                  '"project_id": "12341234123412341234123412341234",' \
                  '"domain_id": "12341234123412341234123412341234",' \
                  '"roles": ["admin"]}'
+
 GRAFFITI_URL = 'http://127.0.0.1:21075/v1/'
+
 GRAFFITI_NAMESPACE_TYPE_MAPPING = '{' \
     '"OS::GLANCE": {},' \
     '"APPLICATION::CATEGORIES": {"capabilities": ["OS::Glance::Image", ' \
     '                      "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
     '"OS::COMPUTE": {"requirements": ["OS::Glance::Image",' \
     '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
-    '"OS::COMPUTE::CPU": {"capabilities": ["OS::COMPUTE::CPU"]},' \
+    '"OS::COMPUTE::CPU": {"capabilities": ["OS::COMPUTE::FLAVOR"]},' \
     '"OS::COMPUTE::GUEST": {"capabilities": ["OS::Glance::Image",' \
     '                 "OS::Glance::Snapshot", "OS::Cinder::Volume"]},' \
     '"OS::COMPUTE::HOST": {"capabilities": ["OS::Glance::Image",' \

@@ -131,26 +131,18 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
     template_name = 'project/instances/source_filter.html'
 
     def get_data(self):
-        token = '{"id": "12341234123412341234123412341234",'\
-                 '"user_id": "12341234123412341234123412341234",'\
-                 '"project_id": "12341234123412341234123412341234",'\
-                 '"domain_id": "12341234123412341234123412341234",'\
-                 '"roles": ["admin"]}'
+        token = self.request.user.token.id
         headers = {}
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
-        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=Detail+EQ+'true'", headers=headers)
+
+        req = urllib2.Request("http://127.0.0.1:21075/v1/resource?query_string={%22resource_types%22%20:%20[%22OS::Glance::Image%22]}", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()
 
-        resource_list = []
-        for resource in resources:
-            if resource['resourceDetail']['capabilities'][0]['capability_type_name'].lower() != 'flavor':
-                resource_list.append(resource['resourceDetail'])
-
-        return resource_list
+        return resources
 
 class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
     form_class = project_forms.FilterForm
@@ -167,7 +159,7 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
-        req = urllib2.Request("http://15.125.110.188:21071/1/resource?query=CAPTYPE+EQ+'Flavor'", headers=headers)
+        req = urllib2.Request("http://127.0.0.1:21075/v1/resource?query_string={""resource_types"":[""OS::Glance::Image""]}", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()

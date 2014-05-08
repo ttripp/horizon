@@ -854,7 +854,7 @@ class InstancesTable(tables.DataTable):
 def getBootSourceCapabilities(resource):
     capabilities = []
     for capability in resource['capabilities']:
-        capabilities.append(str(capability['capability_type_name']))
+        capabilities.append(capability['properties'])
     return capabilities
 
 class SourceFilterTable(tables.DataTable):

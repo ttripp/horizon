@@ -391,10 +391,10 @@ class GraffitiRequirements(workflows.EditGraffitiRequirementsStep):
 
 class EditCapabilitiesAndRequirements(workflows.Workflow):
     slug = "edit_capabilities_and_requirements"
-    name = _("Edit Capabilities and Requirements")
+    name = _("Edit Capabilities")
 
-    success_message = _('Edited capabilities and requirements on "%s".')
-    failure_message = _('Unable to edit capabilities or requirements on "%s".')
+    success_message = _('Edited capabilities on "%s".')
+    failure_message = _('Unable to edit capabilities on "%s".')
     success_url = "horizon:admin:flavors:index"
     default_steps = (GraffitiCapabilities,
                       GraffitiRequirements)

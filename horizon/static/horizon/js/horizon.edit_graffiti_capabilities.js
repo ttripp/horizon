@@ -62,14 +62,14 @@ angular.module('hz').directive('editGraffitiCapabilities',
             var capability = {};
             capability.label = existing_capability.capability_type;
             capability.onRemove = user_clicks_remove;
+            capability.data = {namespace: existing_capability.capability_type_namespace};
+            capability.data.properties = [];
+            angular.forEach(existing_capability.properties, function(value, key) {
+              capability.data.properties.push({name: key, value: value});
+            });
             if (capability.data.properties && capability.data.properties.length > 0) {
               capability.onEdit = user_clicks_edit;
             };
-            capability.data = {namespace: existing_capability.capability_type_namespace};
-            capability.data.properties = [];
-            angular.forEach(existing_capability.properties, function(property) {
-              capability.data.properties.push({name: property.name, value: property.value});
-            });
             $scope.selected_capabilities.push(capability);
             var defaultPropsNS = obj_type + "::Default";
             if (capability.data.namespace == defaultPropsNS && capability.label == "AdditionalProperties") {
@@ -238,7 +238,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
       data["name"] = obj_name;
       data["provider"] = {};
       data["provider"]["id"] = endpoint_id;
-      data["properties"] = [];
+      data["properties"] = {};
       data["capabilities"] = [];
       data["requirements"] = [];
 
@@ -246,7 +246,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
         var data_properties = {};
         data_properties["capability_type_namespace"] = capability.data.namespace;
         data_properties["capability_type"] = capability.label;
-        data_properties["properties"] = [];
+        data_properties["properties"] = {};
         if (capability.data.properties) {
           // TODO(heather): fail validation if properties are not loaded?
           angular.forEach(capability.data.properties, function(property) {
@@ -256,7 +256,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
                 propertyValue = Number(propertyValue);
               };
             };
-            data_properties["properties"].push({"name": property.name, "value": propertyValue});
+	    data_properties["properties"][property.name] = propertyValue;
           });
         };
         data["capabilities"].push(data_properties);

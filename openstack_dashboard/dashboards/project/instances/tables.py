@@ -854,7 +854,7 @@ class InstancesTable(tables.DataTable):
 def getBootSourceCapabilities(resource):
     capabilities = []
     for capability in resource['capabilities']:
-        capabilities.append(str(capability['capability_type_name']))
+        capabilities.append(capability['properties'])
     return capabilities
 
 class SourceFilterTable(tables.DataTable):
@@ -878,8 +878,12 @@ class SourceFilterTable(tables.DataTable):
 class FlavorFilterTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"))
-    description = tables.Column("description",
-                               verbose_name=_("Description"))
+    ram = tables.Column("ram",
+                         verbose_name=_("Ram"))
+    disk = tables.Column("disk",
+                         verbose_name=_("Disk"))
+    vcpus = tables.Column("vcpus",
+                         verbose_name=_("VCPUs"))
 
     def get_object_id(self, data):
         return data['name']

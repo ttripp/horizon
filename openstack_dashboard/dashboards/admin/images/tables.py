@@ -44,7 +44,7 @@ class AdminEditImage(project_tables.EditImage):
 
 class AdminEditCapabilitiesAndRequirements(tables.LinkAction):
     name = "edit_capabilities_and_requirements"
-    verbose_name = _("Edit Capabilities and Requirements")
+    verbose_name = _("Edit Capabilities")
     url = "horizon:admin:images:edit_capabilities_and_requirements"
     classes = ("btn-edit", "ajax-modal")
     policy_rules = (("image", "modify_image"),)

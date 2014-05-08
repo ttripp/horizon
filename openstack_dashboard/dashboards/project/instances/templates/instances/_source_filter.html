@@ -11,6 +11,7 @@
 {% block modal-body %}
     <script>
         $(".btn.btn-small.btn-launch").click(function(e) {
+            console.log(e.target.id);
             var name = e.target.id.slice(15, e.target.id.indexOf("__action_select_resource"));
             $('#source_filter_modal').modal('hide');
             $('#id_source_type').val(name);

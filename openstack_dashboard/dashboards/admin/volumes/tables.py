@@ -20,7 +20,7 @@ from openstack_dashboard.dashboards.project.volumes \
 
 class AdminEditCapabilitiesAndRequirements(tables.LinkAction):
     name = "edit_capabilities_and_requirements"
-    verbose_name = _("Edit Capabilities and Requirements")
+    verbose_name = _("Edit Capabilities")
     url = "horizon:admin:volumes:edit_capabilities_and_requirements"
     classes = ("btn-edit", "ajax-modal")
     policy_rules = (("volume"),)
@@ -69,8 +69,8 @@ class VolumesTable(project_tables.VolumesTable):
         status_columns = ["status"]
         row_class = project_tables.UpdateRow
         table_actions = (project_tables.DeleteVolume, VolumesFilterAction)
-        row_actions = (AdminEditCapabilitiesAndRequirements,
-                       project_tables.DeleteVolume)
+        row_actions = (project_tables.DeleteVolume,
+                       AdminEditCapabilitiesAndRequirements)
         columns = ('tenant', 'host', 'name', 'size', 'status', 'volume_type',
                    'attachments',)
 

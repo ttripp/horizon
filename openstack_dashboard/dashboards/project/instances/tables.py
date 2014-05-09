@@ -860,8 +860,8 @@ def getBootSourceCapabilities(resource):
 class SourceFilterTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"))
-    description = tables.Column("description",
-                               verbose_name=_("Description"))
+    type = tables.Column("type",
+                               verbose_name=_("Resource Type"))
     capabilities = tables.Column(getBootSourceCapabilities,
                                wrap_list=True,
                                attrs={"class": "hide"},

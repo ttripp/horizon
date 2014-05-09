@@ -25,8 +25,6 @@ Views for managing instances.
 import urllib2
 import json
 
-from django.conf import settings
-
 from openstack_dashboard.dashboards.project.images \
     import utils as image_utils
 

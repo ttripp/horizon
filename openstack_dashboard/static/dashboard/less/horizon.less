@@ -1672,6 +1672,7 @@ label.log-length {
   .angular_tree_table {
     ul.no_results {
       background-color: @border-color;
+      border: 1px solid @table-border-color;
     }
   }
   .left {
@@ -1685,6 +1686,12 @@ label.log-length {
         width: 300px;
       }
     }
+    ul.no_results, .error {
+      width: 300px;
+    }
+    .progress {
+      width: 320px;
+    }
   }
   .right {
     .angular_tree_table_header {
@@ -1696,6 +1703,12 @@ label.log-length {
       .tree_element {
         width: 261px;
       }
+    }
+    ul.no_results, .error {
+      width: 261px;
+    }
+    .progress {
+      width: 283px;
     }
     .btn {
       color: @black;
@@ -1737,6 +1750,10 @@ label.log-length {
     border: 1px solid @table-border-color;
     padding: 10px;
     opacity: 0.5;
+  }
+  .error {
+    border: 1px solid @table-border-color;
+    padding: 10px;
   }
   
   /* buttons */

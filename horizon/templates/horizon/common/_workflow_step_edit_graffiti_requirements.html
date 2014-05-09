@@ -4,11 +4,14 @@
     {% include "horizon/common/_form_fields.html" %}
 </div>
 {% block modal-footer %}
-<button ng-disabled="edit_open"
-        ng-show="!namespaces_load_error"
-        save-capabilities-and-requirements
+<button save-capabilities-and-requirements
         ng-click="$event.preventDefault(); save($event)"
         class="btn btn-primary"
         id="btn-save"
         data-dismiss="modal">Update</button>
+<a cancel-capabilities-and-requirements
+   ng-click="$event.preventDefault(); cancel($event)"
+   class="btn secondary cancel close"
+   id="btn-cancel"
+   data-dismiss="modal">Cancel</a>
 {% endblock %}

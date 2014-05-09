@@ -65,7 +65,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
     $scope.capabilities_existing_is_loading = function() {
       return $scope.capabilities_existing_loading;
     };
-    // selected/existing tree had an error
+    // existing tree had an error
     $scope.capabilities_existing_is_error = function() {
       if (!$scope.capabilities_existing_loading) {
         if ($scope.capabilities_existing_load_error) {
@@ -74,7 +74,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
       };
       return false;
     };
-    // selected/existing tree error text
+    // existing tree error text
     $scope.capabilities_existing_get_error_text = function() {
       return $scope.capabilities_existing_load_error;
     };
@@ -149,9 +149,6 @@ angular.module('hz').directive('editGraffitiCapabilities',
         };
       }, function(reason) {
       });
-
-      // other first-time stuff
-      $scope.capabilities_properties_loading = false;
     };
 
     // on load and reload, populate existing tree
@@ -214,8 +211,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
     };
 
     var user_clicks_add = function(branch) {
-      var new_branch = {};
-      new_branch = angular.copy(branch);
+      var new_branch = angular.copy(branch);
       new_branch.onAdd = null;
       new_branch.children = null;
       $scope.capabilities_existing_tree.push(new_branch);
@@ -259,25 +255,24 @@ angular.module('hz').directive('editGraffitiCapabilities',
     };
 
     var user_clicks_edit = function(branch) {
-      $scope.branch_in_edit = branch;
+      $scope.capabilities_branch_in_edit = branch;
       // save a copy of the original values in case of cancel
-      $scope.branch_in_edit_properties_orig = angular.copy(branch.data.properties);
+      $scope.capabilities_branch_in_edit_properties_orig = angular.copy(branch.data.properties);
       $scope.capabilities_edit_open = true;
     };
 
-    // TODO(heather): do we even need this method?
     $scope.save_capability_property_data = function() {
       $scope.capabilities_edit_open = false;
-      var data = $scope.branch_in_edit.data.properties;
-      for (var i=0; i<data.length; i++) {
+      var data = $scope.capabilities_branch_in_edit.data.properties;
+      for (var i = 0; i < data.length; i++) {
         console.log("PROPERTY: " + data[i].name + "=" + data[i].value);
       }
-      console.log($scope.existing_capabilities);
+      console.log($scope.capabilities_existing_tree);
     };
 
     $scope.cancel_capability_property_data_edit = function() {
-      if ($scope.branch_in_edit != null) {
-        $scope.branch_in_edit.data.properties = angular.copy($scope.branch_in_edit_properties_orig);
+      if ($scope.capabilities_branch_in_edit != null) {
+        $scope.capabilities_branch_in_edit.data.properties = angular.copy($scope.capabilities_branch_in_edit_properties_orig);
       }
       $scope.capabilities_edit_open = false;
     };
@@ -317,8 +312,13 @@ angular.module('hz').directive('editGraffitiCapabilities',
         console.log("ERROR DURING PUT: " + status);
       });
 
-      $scope.existing_capabilities = [];
-      $scope.capabilities_chosen_existing_description = "";
+      // reset for next open
+      $scope.capabilities_obj_id = -1;
+    });
+
+    $scope.$on('graffiti:canceled', function() {
+      // reset for next open
+      $scope.capabilities_obj_id = -1;
     });
   }
 ]);

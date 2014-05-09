@@ -6,14 +6,25 @@
 
 {% block form_id %}{% endblock %}
 
-{% block modal-header %}{% trans "Tagged flavors" %}{% endblock %}
+{% block modal-header %}{% trans "Tagged flavors" %}
+    <input id="filter_input" class="pull-right" type="text" placeholder="Filter Flavor Capabilities">
+{% endblock %}
 
 {% block modal-body %}
     <script>
+        $('table#resources tfoot tr td span').hide()    
+    
         $(".btn.btn-small.btn-launch").click(function(e) {
             var name = e.target.id.slice(15, e.target.id.indexOf("__action_select_resource"));
             $('#flavor_filter_modal').modal('hide');
             $('#id_flavor').val(name);
+        });
+        
+        $(function() {
+            $('#filter_input').quicksearch('table#resources tbody tr', {
+                'delay': 100,
+                'bind': 'keyup click',
+            });
         });
     </script>
 {% endblock %}

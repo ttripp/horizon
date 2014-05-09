@@ -4,6 +4,9 @@
     <input id="angular_tree_filter" class="filter angular_tree_filter" type="text" placeholder="Filter" name="angular_tree_filter" ng-model="abn_filter_value" ng-change="filter_changed()"/>
   </div>
   <progressbar class="progress-striped active" max="100" value="100" ng-show="isLoading()" />
+  <div class="error" ng-show="isError()" style="color:red">
+    {{ getErrorText() }}
+  </div>
   <ul class="no_results" ng-show="tree_rows.length == 0 && !isLoading()"><li>{{ emptyText }}</li></ul>
   <ul class="abn-tree nav tree_elements" ng-show="!isLoading()">
     <ul ng-repeat="row in tree_rows | filter: abn_filter_value | filter:{visible:true} track by row.branch.uid"

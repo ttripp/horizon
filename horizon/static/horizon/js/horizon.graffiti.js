@@ -44,11 +44,7 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
 
       $http.get(base_uri + 'capability_type/all/' + namespace)
         .success(function(data) {
-          if (data) {
-            deferred.resolve(data);
-          } else {
-            deferred.reject('Not Found');
-          }
+          deferred.resolve(data);
         }).error(error_function);
       return deferred.promise;
     };

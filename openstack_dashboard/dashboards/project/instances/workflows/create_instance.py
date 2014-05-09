@@ -567,6 +567,8 @@ class LaunchInstance(workflows.Workflow):
         images = api.glance.image_list_detailed(request)
         selected_resource = context['source_type']
 
+
+        image_id = None
         for image in images[0]:
             if image.name == selected_resource:
                 image_id = image.id
@@ -576,10 +578,14 @@ class LaunchInstance(workflows.Workflow):
         # source_type = context.get('source_type', None)
         # if source_type in ['image_id', 'instance_snapshot_id']:
         #     image_id = context['source_id']
-        # elif source_type in ['volume_id', 'volume_snapshot_id']:
-        #     dev_mapping_1 = {context['device_name']: '%s::%s' %
-        #                                              (context['source_id'],
-        #                    int(bool(context['delete_on_terminate'])))}
+        if not image_id:
+            volumes = api.cinder.volume_list(request)
+            for volume in volumes:
+                if volume.name == selected_resource:
+                    volume_id = volume.id
+                    image_id = ''
+                    break
+            dev_mapping_1 = {'vda': volume_id + ":vol::0"}
         # elif source_type == 'volume_image_id':
         #     dev_mapping_2 = [
         #         {'device_name': str(context['device_name']),

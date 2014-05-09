@@ -25,6 +25,8 @@ Views for managing instances.
 import urllib2
 import json
 
+from django.conf import settings
+
 from openstack_dashboard.dashboards.project.images \
     import utils as image_utils
 
@@ -139,8 +141,9 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
+        graffiti_url = getattr(settings, 'GRAFFITI_URL', '')
 
-        req = urllib2.Request("http://127.0.0.1:21075/v1/resource?query_string={%22resource_types%22%20:%20[%22OS::Glance::Image%22]}", headers=headers)
+        req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Glance::Image%22]}", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()
@@ -156,6 +159,16 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
             if resource['id'] in boot_images_ids:
                 boot_resources.append(resource)
 
+        req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Cinder::Volume%22]}", headers=headers)
+        f = urllib2.urlopen(req)
+        resources = json.loads(f.read())
+        f.close()
+
+        for resource in resources:
+            volume = api.cinder.volume_get(self.request, resource['id'])
+            if volume._apiresource.bootable:
+                boot_resources.append(resource)
+
         return boot_resources
 
 class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
@@ -169,7 +182,9 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
         headers['Accept'] = 'application/json'
         headers['X-Auth-Token'] = token
 
-        req = urllib2.Request("http://127.0.0.1:21075/v1/resource?resource_type=OS::COMPUTE::CPU", headers=headers)
+        graffiti_url = getattr(settings, 'GRAFFITI_URL', '')
+
+        req = urllib2.Request(graffiti_url + "resource?resource_type=OS::COMPUTE::CPU", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
 

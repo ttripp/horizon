@@ -784,7 +784,7 @@ class ResourcesFilterAction(tables.FilterAction):
 
 class SelectResourceAction(tables.LinkAction):
     name = "select_resource"
-    verbose_name = _("Select Resource")
+    verbose_name = _("Select")
     classes = ("btn-launch", )
 
 
@@ -872,7 +872,6 @@ class SourceFilterTable(tables.DataTable):
 
     class Meta:
         name = "resources"
-        table_actions = (ResourcesFilterAction, )
         multi_select = False
         row_actions = (SelectResourceAction, )
 
@@ -894,6 +893,5 @@ class FlavorFilterTable(tables.DataTable):
 
     class Meta:
         name = "resources"
-        table_actions = (ResourcesFilterAction, )
         multi_select = False
         row_actions = (SelectResourceAction, )

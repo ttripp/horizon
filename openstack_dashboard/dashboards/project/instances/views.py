@@ -184,7 +184,7 @@ class FlavorFilterView(forms.ModalFormView, tables.DataTableView):
 
         graffiti_url = getattr(settings, 'GRAFFITI_URL', '')
 
-        req = urllib2.Request(graffiti_url + "resource?resource_type=OS::COMPUTE::CPU", headers=headers)
+        req = urllib2.Request(graffiti_url + "resource?resource_type=OS::Nova::Flavor", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
 

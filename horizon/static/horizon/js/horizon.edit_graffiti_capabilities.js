@@ -297,7 +297,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
       data["capabilities"] = [];
       data["requirements"] = [];
 
-      angular.forEach($scope.existing_capabilities, function(capability) {
+      angular.forEach($scope.capabilities_existing_tree, function(capability) {
         var data_properties = {};
         data_properties["capability_type_namespace"] = capability.data.namespace;
         data_properties["capability_type"] = capability.label;

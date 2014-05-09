@@ -25,6 +25,8 @@ Views for managing instances.
 import urllib2
 import json
 
+from django.conf import settings
+
 from openstack_dashboard.dashboards.project.images \
     import utils as image_utils
 
@@ -157,15 +159,15 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
             if resource['id'] in boot_images_ids:
                 boot_resources.append(resource)
 
-        # req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Cinder::Volume%22]}", headers=headers)
-        # f = urllib2.urlopen(req)
-        # resources = json.loads(f.read())
-        # f.close()
-        #
-        # for resource in resources:
-        #     volume = api.cinder.volume_get(self.request, resource.id)
-        #     if volume['bootable']:
-        #         boot_resources.append(resource)
+        req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Cinder::Volume%22]}", headers=headers)
+        f = urllib2.urlopen(req)
+        resources = json.loads(f.read())
+        f.close()
+
+        for resource in resources:
+            volume = api.cinder.volume_get(self.request, resource['id'])
+            if volume._apiresource.bootable:
+                boot_resources.append(resource)
 
         return boot_resources
 

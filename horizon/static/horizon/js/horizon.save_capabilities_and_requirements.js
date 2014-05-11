@@ -38,4 +38,30 @@ angular.module('hz').directive('saveCapabilitiesAndRequirements',
       $(".modal-footer>.btn-primary").replaceWith($("#btn-save"));
     };
   }
+])
+.directive('cancelCapabilitiesAndRequirements',
+  function() {
+    return {
+      restrict: 'AEC',
+      replace: false,
+      templateUrl: '/static/horizon/js/angular/graffiti/partials/cancel_capabilities_and_requirements.html',
+      controller: 'CancelCapabilitiesAndRequirementsController',
+    }
+  })
+.controller('CancelCapabilitiesAndRequirementsController',
+            ['$scope', '$rootScope',
+
+  function($scope, $rootScope) {
+    'use strict';
+
+    $scope.cancel = function() {
+      $rootScope.$broadcast('graffiti:canceled');
+    };
+
+    if ($(".modal-footer>.cancel").attr('id') == 'btn-cancel') {
+      $("fieldset>#btn-cancel").remove();
+    } else {
+      $(".modal-footer>.cancel").replaceWith($("#btn-cancel"));
+    };
+  }
 ]);

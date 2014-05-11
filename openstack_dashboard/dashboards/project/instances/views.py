@@ -143,7 +143,7 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
 
         graffiti_url = getattr(settings, 'GRAFFITI_URL', '')
 
-        req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Glance::Image%22]}", headers=headers)
+        req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Glance::Image%22,%22OS::Glance::Snapshot%22]}", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()
@@ -159,7 +159,7 @@ class SourceFilterView(forms.ModalFormView, tables.DataTableView):
             if resource['id'] in boot_images_ids:
                 boot_resources.append(resource)
 
-        req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Cinder::Volume%22]}", headers=headers)
+	req = urllib2.Request(graffiti_url + "resource?query_string={%22resource_types%22%20:%20[%22OS::Cinder::Volume%22,%22OS::Cinder::VolumeSnapshot%22]}", headers=headers)
         f = urllib2.urlopen(req)
         resources = json.loads(f.read())
         f.close()

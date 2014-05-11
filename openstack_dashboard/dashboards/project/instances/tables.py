@@ -889,7 +889,7 @@ class FlavorFilterTable(tables.DataTable):
                         verbose_name=("Capabilities"))
 
     def get_object_id(self, data):
-        return data['name']
+        return data['name'] + "__ram" + data['ram'] + "__vcpus" + data['vcpus'] + "__disk" + data['disk']
 
     class Meta:
         name = "resources"

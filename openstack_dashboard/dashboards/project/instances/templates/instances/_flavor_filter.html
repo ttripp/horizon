@@ -15,9 +15,24 @@
         $('table#resources tfoot tr td span').hide()    
     
         $(".btn.btn-small.btn-launch").click(function(e) {
-            var name = e.target.id.slice(15, e.target.id.indexOf("__action_select_resource"));
+            var ramIndex = e.target.id.indexOf("__ram") + 5
+            var vcpusIndex = e.target.id.indexOf("__vcpus") + 7
+            var diskIndex = e.target.id.indexOf("__disk") + 6
+            
+            var name = e.target.id.slice(15, e.target.id.indexOf("__ram"));
+            var ram = e.target.id.slice(ramIndex, e.target.id.indexOf("__vcpus"));
+            var vcpus = e.target.id.slice(vcpusIndex, e.target.id.indexOf("__disk"));
+            var disk = e.target.id.slice(diskIndex, e.target.id.indexOf("__action_select_resource"));
+
+
             $('#flavor_filter_modal').modal('hide');
             $('#id_flavor').val(name);
+            $("#flavor_ram").text(ram);
+            $("#flavor_name").html(name);
+            $("#flavor_vcpus").text(vcpus);
+            $("#flavor_disk").text(disk);
+            $("#flavor_ephemeral").text(0);
+            $("#flavor_disk_total").text(0);
         });
         
         $(function() {

@@ -10,6 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from horizon import exceptions
@@ -19,6 +21,7 @@ from horizon import workflows
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.admin.aggregates import constants
 
+INDEX_URL = "horizon:admin:aggregates:index"
 
 class SetAggregateInfoAction(workflows.Action):
     name = forms.CharField(label=_("Name"),
@@ -232,3 +235,91 @@ class ManageAggregateHostsWorkflow(workflows.Workflow):
                 request, _('Error when adding or removing hosts.'))
             return False
         return True
+
+
+class GraffitiCapabilitiesAction(workflows.EditGraffitiCapabilitiesAction):
+
+    class Meta:
+        name = _("Capabilities")
+        slug = 'capabilities'
+
+
+class GraffitiCapabilities(workflows.EditGraffitiCapabilitiesStep):
+    action_class = GraffitiCapabilitiesAction
+    depends_on = ('aggregate_id',
+                  'aggregate_type')
+
+    def __init__(self, workflow):
+        super(GraffitiCapabilities, self).__init__(workflow)
+
+        self.token = workflow.request.user.token.id
+        self.endpoint_id = None
+        for entry in workflow.request.user.service_catalog:
+            if entry['type'] == 'compute':
+                self.endpoint_id = entry['endpoints'][0]['id']
+                break
+        self.service_url = getattr(settings, 'GRAFFITI_URL', '')
+        # TODO(heather): take this out!
+        self.temp_token = getattr(settings, 'GRAFFITI_TOKEN', '')
+        self.temp_url = getattr(settings, 'GRAFFITI_TEMP_URL', '')
+        self.namespace_type_mapping = getattr(
+            settings, 'GRAFFITI_NAMESPACE_TYPE_MAPPING', '')
+
+    def prepare_action_context(self, request, context):
+        context = super(GraffitiCapabilities,
+                        self).prepare_action_context(request, context)
+        self.obj_id = context.get('aggregate_id')
+        self.obj_type = context.get('aggregate_type')
+
+        return context
+
+
+class GraffitiRequirementsAction(workflows.EditGraffitiRequirementsAction):
+
+    class Meta:
+        name = _("Requirements")
+        slug = 'requirements'
+
+
+class GraffitiRequirements(workflows.EditGraffitiRequirementsStep):
+    action_class = GraffitiRequirementsAction
+    depends_on = ('aggregate_id',
+                  'aggregate_type')
+
+    def __init__(self, workflow):
+        super(GraffitiRequirements, self).__init__(workflow)
+
+        self.token = workflow.request.user.token.id
+        self.endpoint_id = None
+        for entry in workflow.request.user.service_catalog:
+            if entry['type'] == 'compute':
+                self.endpoint_id = entry['endpoints'][0]['id']
+                break
+        self.service_url = getattr(settings, 'GRAFFITI_URL', '')
+        # TODO(heather): take this out!
+        self.temp_token = getattr(settings, 'GRAFFITI_TOKEN', '')
+        self.temp_url = getattr(settings, 'GRAFFITI_TEMP_URL', '')
+        self.namespace_type_mapping = getattr(
+            settings, 'GRAFFITI_NAMESPACE_TYPE_MAPPING', '')
+
+    def prepare_action_context(self, request, context):
+        context = super(GraffitiRequirements,
+                        self).prepare_action_context(request, context)
+        self.obj_id = context.get('aggregate_id')
+        self.obj_type = context.get('aggregate_type')
+
+        return context
+
+
+class EditCapabilitiesAndRequirements(workflows.Workflow):
+    slug = "edit_capabilities_and_requirements"
+    name = _("Edit Capabilities")
+
+    success_message = _('Edited capabilities on "%s".')
+    failure_message = _('Unable to edit capabilities on "%s".')
+    success_url = "horizon:admin:agreggates:index"
+    default_steps = (GraffitiCapabilities,
+                      GraffitiRequirements)
+
+    def handle(self, request, data):
+        return data

@@ -93,6 +93,19 @@ def get_zone_hosts(zone):
     return host_details
 
 
+class AdminEditCapabilitiesAndRequirements(tables.LinkAction):
+    name = "edit_capabilities_and_requirements"
+    verbose_name = _("Edit Capabilities")
+    url = "horizon:admin:aggregates:edit_capabilities_and_requirements"
+    classes = ("btn-edit", "ajax-modal")
+    policy_rules = (("aggregate"),)
+
+
+def allowed(self, request, aggregate=None):
+        if aggregate:
+            return True
+
+
 class HostAggregatesTable(tables.DataTable):
     name = tables.Column('name', verbose_name=_('Name'))
     availability_zone = tables.Column('availability_zone',
@@ -114,6 +127,7 @@ class HostAggregatesTable(tables.DataTable):
                          DeleteAggregateAction)
         row_actions = (UpdateAggregateAction,
                        ManageHostsAction,
+                       AdminEditCapabilitiesAndRequirements,
                        DeleteAggregateAction)
 
 

@@ -26,4 +26,7 @@ urlpatterns = patterns('openstack_dashboard.dashboards.admin.aggregates.views',
         views.UpdateView.as_view(), name='update'),
     url(r'^(?P<id>[^/]+)/manage_hosts/$',
         views.ManageHostsView.as_view(), name='manage_hosts'),
+    url(r'^(?P<id>[^/]+)/edit_capabilities_and_requirements/$',
+        views.EditCapabilitiesAndRequirementsView.as_view(),
+        name='edit_capabilities_and_requirements'),
 )

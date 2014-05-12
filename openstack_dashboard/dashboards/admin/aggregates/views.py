@@ -10,6 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
@@ -106,3 +107,37 @@ class ManageHostsView(workflows.WorkflowView):
         context = super(ManageHostsView, self).get_context_data(**kwargs)
         context['id'] = self.kwargs['id']
         return context
+
+
+class EditCapabilitiesAndRequirementsView(workflows.WorkflowView):
+    workflow_class = aggregate_workflows.EditCapabilitiesAndRequirements
+
+    def get_initial(self):
+        aggregate_id = self.kwargs['id']
+        token = self.request.user.token.id
+
+        try:
+            # TODO(heather): needs to be a graffiti call
+            pass
+
+        except Exception:
+            url = reverse('horizon:admin:agreggates:index')
+            exceptions.handle(self.request,
+                              _("Unable to retrieve aggregates tags."),
+                              redirect=url)
+
+        return {'aggregate_id': aggregate_id,
+                'aggregate_type': 'OS::Nova::Aggregate',#resource type
+                'token': token}
+
+    def get_context_data(self, **kwargs):
+        context_data = super(EditCapabilitiesAndRequirementsView, self). \
+            get_context_data(**kwargs)
+
+        context_data['token'] = self.request.user.token.id
+        context_data['aggregate_id'] = kwargs['id']
+
+        self.token = self.request.user.token.id
+        self.aggregate_id = kwargs['id']
+
+        return context_data

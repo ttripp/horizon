@@ -301,7 +301,7 @@ angular.module('hz').directive('editGraffitiRequirements',
 
     $scope.$on('graffiti:canceled', function() {
       // reset for next open
-      $scope.capabilities_obj_id = -1;
+      $scope.requirements_obj_id = -1;
     });
 
     var get_property_base_name = function(name) {

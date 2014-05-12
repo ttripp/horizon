@@ -281,7 +281,11 @@ angular.module('hz').directive('editGraffitiCapabilities',
       return graffitiService.detect_validity_errors(property_value);
     };
 
-    $scope.$on('graffiti:saved', function() {
+    var unregister = function() {
+      console.log("Sorry, unregister isn't set yet");
+    };
+
+    var unregister = $scope.$on('graffiti:saved', function() {
       var data = {};
       data["id"] = $scope.capabilities_obj_id;
       data["type"] = obj_type;
@@ -302,7 +306,7 @@ angular.module('hz').directive('editGraffitiCapabilities',
             if (property.value == null) {
               property.value = "";
             };
-	        data_properties["properties"][property.name] = property.value.toString();
+	    data_properties["properties"][property.name] = property.value.toString();
           });
         };
         data["capabilities"].push(data_properties);
@@ -310,10 +314,14 @@ angular.module('hz').directive('editGraffitiCapabilities',
 
       var put_promise = graffitiService.put_capabilities($scope.capabilities_obj_id, data, service_url, token, function(data, status, headers, config) {
         console.log("ERROR DURING PUT: " + status);
+        unregister();
+      });
+      // reset for next open
+      put_promise.then(function(data) {
+        $scope.capabilities_obj_id = -1;
+        unregister();
       });
 
-      // reset for next open
-      $scope.capabilities_obj_id = -1;
     });
 
     $scope.$on('graffiti:canceled', function() {

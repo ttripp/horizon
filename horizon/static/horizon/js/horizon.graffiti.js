@@ -104,6 +104,7 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
 
       $http.put(base_uri + 'resource/' + obj_id, data)
         .success(function(data) {
+	  deferred.resolve(data);
           console.log("put success");
         }).error(error_function);
       return deferred.promise;

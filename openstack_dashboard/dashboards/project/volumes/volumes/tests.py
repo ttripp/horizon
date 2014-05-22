@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2012 United States Government as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # All Rights Reserved.
@@ -785,6 +783,12 @@ class VolumeViewTests(test.TestCase):
         volume = self.cinder_volumes.first()
         servers = [s for s in self.servers.list()
                    if s.tenant_id == self.request.user.tenant_id]
+        volume.attachments = [{'id': volume.id,
+                               'volume_id': volume.id,
+                               'volume_name': volume.name,
+                               'instance': servers[0],
+                               'device': '/dev/vdb',
+                               'server_id': servers[0].id}]
 
         cinder.volume_get(IsA(http.HttpRequest), volume.id).AndReturn(volume)
         api.nova.server_list(IsA(http.HttpRequest)).AndReturn([servers, False])
@@ -793,11 +797,13 @@ class VolumeViewTests(test.TestCase):
         url = reverse('horizon:project:volumes:volumes:attach',
                       args=[volume.id])
         res = self.client.get(url)
+        msg = 'Volume %s on instance %s' % (volume.name, servers[0].name)
+        self.assertContains(res, msg)
         # Asserting length of 2 accounts for the one instance option,
         # and the one 'Choose Instance' option.
         form = res.context['form']
         self.assertEqual(len(form.fields['instance']._choices),
-                         2)
+                         1)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(isinstance(form.fields['device'].widget,
                                    widgets.TextInput))

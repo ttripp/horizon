@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2013 B1 Systems GmbH
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -38,12 +36,12 @@ class AdminHypervisorsTable(tables.DataTable):
     memory = tables.Column('memory_mb',
                            verbose_name=_("RAM (total)"),
                            attrs={'data-type': 'size'},
-                           filters=(sizeformat.mbformat,))
+                           filters=(sizeformat.mb_float_format,))
 
     memory_used = tables.Column('memory_mb_used',
                                 verbose_name=_("RAM (used)"),
                                 attrs={'data-type': 'size'},
-                                filters=(sizeformat.mbformat,))
+                                filters=(sizeformat.mb_float_format,))
 
     local = tables.Column('local_gb',
                           verbose_name=_("Storage (total)"),

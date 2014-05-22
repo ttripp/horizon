@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2012,  Nachi Ueno,  NTT MCL,  Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -53,7 +51,7 @@ class AddInterface(forms.SelfHandlingForm):
         try:
             networks = api.neutron.network_list_for_tenant(request, tenant_id)
         except Exception as e:
-            msg = _('Failed to get network list %s') % e.message
+            msg = _('Failed to get network list %s') % e
             LOG.info(msg)
             messages.error(request, msg)
             router_id = request.REQUEST.get('router_id',
@@ -164,7 +162,7 @@ class SetGatewayForm(forms.SelfHandlingForm):
         try:
             networks = api.neutron.network_list(request, **search_opts)
         except Exception as e:
-            msg = _('Failed to get network list %s') % e.message
+            msg = _('Failed to get network list %s') % e
             LOG.info(msg)
             messages.error(request, msg)
             redirect = reverse(self.failure_url)
@@ -188,7 +186,7 @@ class SetGatewayForm(forms.SelfHandlingForm):
             messages.success(request, msg)
             return True
         except Exception as e:
-            msg = _('Failed to set gateway %s') % e.message
+            msg = _('Failed to set gateway %s') % e
             LOG.info(msg)
             redirect = reverse(self.failure_url)
             exceptions.handle(request, msg, redirect=redirect)

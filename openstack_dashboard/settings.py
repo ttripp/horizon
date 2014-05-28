@@ -79,7 +79,7 @@ HORIZON_IMAGES_ALLOW_UPLOAD = True
 # of supported image formats.
 OPENSTACK_IMAGE_BACKEND = {
     'image_formats': [
-        ('', ''),
+        ('', _('Select format')),
         ('aki', _('AKI - Amazon Kernel Image')),
         ('ami', _('AMI - Amazon Machine Image')),
         ('ari', _('ARI - Amazon Ramdisk Image')),
@@ -175,17 +175,21 @@ SESSION_COOKIE_MAX_SIZE = 4093
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 LANGUAGES = (
+    ('de', 'German'),
     ('en', 'English'),
     ('en-au', 'Australian English'),
     ('en-gb', 'British English'),
     ('es', 'Spanish'),
     ('fr', 'French'),
+    ('hi', 'Hindi'),
     ('ja', 'Japanese'),
     ('ko', 'Korean (Korea)'),
     ('nl', 'Dutch (Netherlands)'),
     ('pl', 'Polish'),
     ('pt-br', 'Portuguese (Brazil)'),
+    ('sr', 'Serbian'),
     ('zh-cn', 'Simplified Chinese'),
+    ('zh-tw', 'Chinese (Taiwan)'),
 )
 LANGUAGE_CODE = 'en'
 LANGUAGE_COOKIE_NAME = 'horizon_language'
@@ -253,7 +257,7 @@ if DEBUG:
 # during django reloads and an active user is logged in, the monkey
 # patch below will not otherwise be applied in time - resulting in developers
 # appearing to be logged out.  In typical production deployments this section
-# below may be ommited, though it should not be harmful
+# below may be omitted, though it should not be harmful
 from openstack_auth import utils as auth_utils
 auth_utils.patch_middleware_get_user()
 

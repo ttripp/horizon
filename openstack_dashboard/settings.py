@@ -120,6 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.eggs.Loader',
     'horizon.loaders.TemplateLoader'
 )
 
@@ -130,6 +131,7 @@ TEMPLATE_DIRS = (
 STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'dajaxice.finders.DajaxiceFinder',
 )
 
 COMPRESS_PRECOMPILERS = (
@@ -156,6 +158,7 @@ INSTALLED_APPS = [
     'compressor',
     'horizon',
     'openstack_auth',
+    'dajaxice',
 ]
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

@@ -36,6 +36,7 @@ from openstack_dashboard.api import ceilometer
 from openstack_dashboard.api import cinder
 from openstack_dashboard.api import fwaas
 from openstack_dashboard.api import glance
+from openstack_dashboard.api import graffiti
 from openstack_dashboard.api import heat
 from openstack_dashboard.api import keystone
 from openstack_dashboard.api import lbaas
@@ -52,6 +53,7 @@ __all__ = [
     "cinder",
     "fwaas",
     "glance",
+    "graffiti",
     "heat",
     "keystone",
     "lbaas",

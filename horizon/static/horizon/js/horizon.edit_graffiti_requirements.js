@@ -127,8 +127,7 @@ angular.module('hz').directive('editGraffitiRequirements',
       };
 
       var namespaces_loaded_count = 0;
-      var namespace_promise = graffitiService.get_namespaces(temp_url, temp_token, available_load_failure_handler);
-      namespace_promise.then(function(namespace_data) {
+      var namespace_callback = function(namespace_data) {
         if (namespace_data) {
           var tree = []
           angular.forEach(namespace_data, function(namespace) {
@@ -146,8 +145,8 @@ angular.module('hz').directive('editGraffitiRequirements',
             });
           });
         };
-      }, function(reason) {
-      });
+      };
+      graffitiService.get_namespaces(obj_type, namespace_callback);
 
       var operators_promise = graffitiService.get_property_operators(temp_url, temp_token, available_load_failure_handler);
       operators_promise.then(function(operators_data) {

@@ -27,13 +27,17 @@ from django.conf.urls.static import static  # noqa
 from django.conf.urls import url  # noqa
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns  # noqa
 
+from dajaxice.core import dajaxice_autodiscover, dajaxice_config
+dajaxice_autodiscover()
+
 import horizon
 
 
 urlpatterns = patterns('',
     url(r'^$', 'openstack_dashboard.views.splash', name='splash'),
     url(r'^auth/', include('openstack_auth.urls')),
-    url(r'', include(horizon.urls))
+    url(r'', include(horizon.urls)),
+    url(dajaxice_config.dajaxice_url, include('dajaxice.urls'))
 )
 
 # Development static app and project media serving using the staticfiles app.

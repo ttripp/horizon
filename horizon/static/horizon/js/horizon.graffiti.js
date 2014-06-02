@@ -21,20 +21,9 @@ angular.module('hz').service('graffitiService', ['$http', '$q',
     /*
      * http to backend
      */
-    self.get_namespaces = function(base_uri, token, error_function, add_function) {
-      var deferred = $q.defer();
-      $http.defaults.headers.common['Accept'] = 'application/json';
-      $http.defaults.headers.common['X-Auth-Token'] = token;
-
-      $http.get(base_uri + 'namespace/list')
-        .success(function(data) {
-          if (data) {
-            deferred.resolve(data);
-          } else {
-            deferred.reject('Not Found');
-          }
-        }).error(error_function);
-      return deferred.promise;
+    self.get_namespaces = function(obj_type, callback_func) {
+      // TODO(heather): obj_type is not yet used, filtering is still required
+      Dajaxice.openstack_dashboard.dashboards.admin.images.graffiti_get_namespaces(callback_func, {'obj_type': obj_type});
     };
 
     self.get_capabilities_in_namespace = function(namespace, base_uri, token, error_function) {

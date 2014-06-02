@@ -1,3 +1,5 @@
+{% load dajaxice_templatetags %}
+{% dajaxice_js_import %}
 <div edit-graffiti-capabilities class="django_data_holder capabilities" data-token="{{ step.token }}" data-temp-token="{{ step.temp_token }}" data-obj-id="{{ step.obj_id }}" data-service-url="{{ step.service_url }}" data-temp-url="{{ step.temp_url }}" data-obj-type="{{ step.obj_type }}" data-obj-name="{{ step.obj_name }}" data-endpoint-id="{{ step.endpoint_id }}" data-namespace-type-mapping="{{ step.namespace_type_mapping }}">
 </div>
 <div class="hide">
